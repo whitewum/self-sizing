@@ -1,8 +1,15 @@
 # Self-sizing Artifact
 
-This repository contains the code, data summaries, and replay materials used
-by the paper. Every paper figure and table is mapped to its generating script
-and input in `REPRODUCE.md`.
+This repository contains the code, data summaries, and replay materials used by
+the paper *IBLTs Measure Before They Decode: Self-Sizing Set Reconciliation for
+Database Consistency Verification*. Every paper figure and table is mapped to
+its generating script and input in `REPRODUCE.md`.
+
+## Artifact availability
+
+The actively maintained source repository is available at
+<https://github.com/whitewum/self-sizing>. This release is archived at Zenodo
+with DOI [10.5281/zenodo.22186193](https://doi.org/10.5281/zenodo.22186193).
 
 ## Repository contents
 

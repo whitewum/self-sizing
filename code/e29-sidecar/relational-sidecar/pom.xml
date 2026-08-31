@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Relational (Oracle/MySQL composite-key) IBLT sidecar experiment.
+      Reuses the IBLT core, SQL dialects, and controller from the KV sidecar
+      module (../../cm-redis). Build that first:  mvn -f ../../cm-redis install
+      Or use build.sh, which compiles both with plain javac.
+    -->
+    <groupId>io.github.selfsizing</groupId>
+    <artifactId>relational-iblt-sidecar</artifactId>
+    <version>2026.08.10</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.selfsizing</groupId>
+            <artifactId>redis-iblt-merkle-test-kit</artifactId>
+            <version>2026.07.20</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

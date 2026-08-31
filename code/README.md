@@ -12,9 +12,14 @@ simulations and replay experiments.
 - `simulations/strata-baseline/` — Strata-style baseline and regret
   simulation;
 - `simulations/e13-cpp/` — the E13 provenance generator;
-- `e29-sidecar/` — synthetic relational replay utilities and the rateless
-  comparison harness; and
-- `sql-pushdown-mysql/` — the parameterized MySQL SQL-pushdown replay.
+- `e29-sidecar/` — synthetic relational replay utilities, the parameterized
+  data generator, the rateless comparison harness, and the Oracle/MySQL
+  composite-key IBLT/Merkle sidecar (`relational-sidecar/`, reuses `cm-redis`);
+- `cm-redis/` — the standalone Redis/Pika IBLT and optimized-Merkle KV sidecar
+  (Java 17, no third-party runtime dependencies);
+- `sql-pushdown-mysql/` — the parameterized MySQL SQL-pushdown replay; and
+- `production-analysis/` — the aggregation script behind the released
+  production summary and quantile CSVs (raw comparison logs not distributed).
 
 Figure and table inputs are under `../data/paper/`. The commands for running
 the components and regenerating paper outputs are in `../REPRODUCE.md`.

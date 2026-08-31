@@ -7,11 +7,18 @@ listed in `data/manifest.tsv`.
 
 Paper labels (`fig:...`, `tab:...`) are the LaTeX labels in the manuscript.
 
+## Artifact availability
+
+Source code and reproduction materials are maintained at
+<https://github.com/whitewum/self-sizing>. The released version corresponding
+to this artifact is archived at Zenodo:
+<https://doi.org/10.5281/zenodo.22186193>.
+
 ## Dependencies
 
 - Python 3.10+, with `numpy`, `pandas`, `matplotlib`.
 - `scipy` in addition, for `make_figs_p2p3p6.py` only.
-- Go 1.21+ to re-run the simulations from scratch (not needed to redraw figures
+- Go 1.24+ to re-run the simulations from scratch (not needed to redraw figures
   from the shipped summaries).
 - A C++17 compiler and OpenSSL for the E13 provenance generator.
 
