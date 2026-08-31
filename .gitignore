@@ -15,6 +15,10 @@ figures/out/
 __pycache__/
 *.pyc
 
+# Compiled Go binaries (build artifacts; rebuild with `go build` instead)
+code/simulations/plain-t1/plain-t1-f2
+code/simulations/strata-baseline/strata-baseline
+
 # Local storage configuration and credentials
 config/storage.env
 config/*.secret
@@ -25,3 +29,4 @@ config/*.secret
 
 # Local release notes; never publish internal provenance or storage details
 .artifact-internal.md
+.ARTIFACT.md

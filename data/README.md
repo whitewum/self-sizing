@@ -24,6 +24,7 @@ and SHA-256 before using it in the reproduction pipeline.
 | `e29-p1-extra-paper-results.csv` | formal completed cases and reruns for P1 and P1-extra | EOF / incomplete cases keep their status; performance values left blank |
 | `paper_p2_worker_ablation.csv` | median and range for the P2 worker sweep | the range is min--max, not a confidence interval |
 | `paper_kv_scaling.csv` | Redis / Pika time and payload plotting input | dynamic burst points and static injection points are distinguished by field |
+| `plain-t1-m512-summary-1m.csv` | 40-cell M=512 supplemental grid, 1M trials per cell | completes the capacity-tier calibration at the same trial count as the main summary; raw is release-hosted |
 | `plain-t1-fixed-d-raw.csv` | early 10k-trial-per-cell quick sample for fixed-d | quick checks only; the formal distribution figure uses the 4M-row `plain-t1-fixed-d-4m` in the manifest, never this file |
 
 The public treatment of production-derived data is described in

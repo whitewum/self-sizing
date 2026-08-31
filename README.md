@@ -27,6 +27,10 @@ with byte counts and SHA-256 in `data/manifest.tsv`.
 - `figures/` — figure-generation scripts for the released summary data; and
 - `data/paper/` — the small CSV inputs used directly by the paper.
 
+The capacity-tier calibration uses two checked-in 1M-trial summaries: the
+original M={64,256,1024,4096} grid and a separate M=512 supplemental grid. The
+corresponding 40M-row M=512 raw is attached to the `v0.1` release for audit.
+
 The repository does not contain live credentials, database binaries or vendor
 drivers, raw production logs, live database/Redis snapshots, or original
 production schemas.

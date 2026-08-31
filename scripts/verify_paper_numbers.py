@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import math
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
 from pathlib import Path
 
 
@@ -42,6 +42,12 @@ def keyed(items: list[dict[str, str]], *fields: str) -> dict[tuple[str, ...], di
 
 def percent3(rate: str) -> str:
     return str((Decimal(rate) * 100).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP))
+
+
+def capacity_alpha2(q01: float) -> float:
+    """Round beta/q01 upward so the displayed multiplier remains safe."""
+    value = Decimal("1.3") / Decimal(str(q01))
+    return float(value.quantize(Decimal("0.01"), rounding=ROUND_CEILING))
 
 
 def check_t1a() -> None:
@@ -98,11 +104,11 @@ def check_capacity_tiers() -> None:
     for row in source:
         m = int(row["M"])
         worst[m] = min(worst.get(m, float("inf")), float(row["q01_emp"]))
-    expected = {64: (0.6231, 2.09), 256: (0.7979, 1.63),
-                512: (0.8571, 1.52), 1024: (0.8978, 1.45)}
+    expected = {64: (0.6308, 2.07), 256: (0.8045, 1.62),
+                512: (0.8598, 1.52), 1024: (0.8997, 1.45)}
     for m, (q01, alpha) in expected.items():
         close(round(worst[m], 4), q01)
-        close(round(1.3 / worst[m], 2), alpha)
+        close(capacity_alpha2(worst[m]), alpha)
 
 
 def check_protocol_calibration() -> None:

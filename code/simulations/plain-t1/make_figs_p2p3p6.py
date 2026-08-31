@@ -23,10 +23,10 @@ P8   results/t1_prop5_fixed_sign_coverage.csv: full-grid empirical coverage
      audit of Proposition 3.8 for fixed signs and delta=0.05. Configurations need
      at least 20 failed trials; the analytic q05 bound uses the pointwise
      one-sided 95% lower confidence bound for the failure probability.
-P9   results/t1_q01_empirical_guidance.csv: descriptive failed-only q01 values
-     for M0 in {64,256,512,1024}, k=3, d/M0 in {0.8,1.6,8}, and all five
-     sign modes. M0=512 comes from the H100 supplemental raw file. This is
-     configuration guidance, not an SLA.
+The capacity-tier q01 guidance is generated separately by
+``make_q01_guidance.py`` from the two 1M-trial summary files.  Keeping that
+small-table derivation separate prevents accidental reuse of the historical
+10k M=512 supplemental raw.
 """
 import argparse
 from pathlib import Path
@@ -316,39 +316,3 @@ prop5_coverage = prop5.groupby("M").agg(
 prop5_coverage["min_coverage_margin"] = prop5_coverage["min_coverage_margin"].round(6)
 prop5_coverage.to_csv("results/t1_prop5_fixed_sign_coverage.csv", index=False)
 print(prop5_coverage.to_string(index=False))
-
-# ---------- P9: protocol q01 empirical guidance (not certification) ----------
-q01_grid = grid
-m512_raw = Path("results/t1_m512_raw_h100.csv")
-if m512_raw.exists():
-    m512_grid = pd.read_csv(m512_raw)
-    q01_grid = pd.concat(
-        [q01_grid, m512_grid[m512_grid["kind"] == "grid"]],
-        ignore_index=True,
-    )
-q01_source = q01_grid[
-    (q01_grid["M"].isin([64, 256, 512, 1024]))
-    & (q01_grid["k"] == 3)
-    & (q01_grid["failed"] == 1)
-    & (
-        ((q01_grid["d"] / q01_grid["M"] - 0.8).abs() < 0.01)
-        | ((q01_grid["d"] / q01_grid["M"] - 1.6).abs() < 0.01)
-        | ((q01_grid["d"] / q01_grid["M"] - 8.0).abs() < 0.01)
-    )
-]
-q01_rows = []
-for (M, d, neg_ratio), group in q01_source.groupby(["M", "d", "neg_ratio"]):
-    q01 = float(group["dhat_over_d"].quantile(0.01))
-    q01_rows.append({
-        "M": int(M),
-        "k": 3,
-        "d": int(d),
-        "load_d_over_M": round(d / M, 6),
-        "neg_ratio": neg_ratio,
-        "n_failed": len(group),
-        "q01_emp": round(q01, 6),
-        "alpha_beta_1p3": round(1.3 / q01, 6),
-    })
-q01_guidance = pd.DataFrame(q01_rows).sort_values(["M", "d", "neg_ratio"])
-q01_guidance.to_csv("results/t1_q01_empirical_guidance.csv", index=False)
-print(q01_guidance.to_string(index=False))

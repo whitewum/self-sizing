@@ -49,11 +49,16 @@ retry-success curve from `plain-e13-retry-success.csv`.
 
 ## Figures that need an archive download
 
-The 160M-trial raw (`plain-t1-raw-160m`), the 4M fixed-d raw
-(`plain-t1-fixed-d-4m`), and the 260k E8 failure-bias subset
+The 160M-trial raw (`plain-t1-raw-160m`), the 40M M=512 supplemental raw
+(`plain-t1-m512-raw-40m`), the 4M fixed-d raw (`plain-t1-fixed-d-4m`), and the
+260k E8 failure-bias subset
 (`plain-t1-e8-failure-bias`) are hosted externally; see `data/manifest.tsv` for
 the archive location, byte count, and SHA-256. Each script takes the downloaded
 file as an argument.
+
+The M=512 raw is retained for audit provenance. The capacity-tier table is
+regenerated from its checked-in 1M-trial summary, so this 218 MB download is
+not required for the normal table-reproduction path.
 
 | Paper label | Script | Downloaded input | Command |
 |---|---|---|---|
@@ -73,15 +78,24 @@ python3 scripts/verify_paper_numbers.py
 | Paper label | Input CSV in `data/paper/` |
 |---|---|
 | `tab:t1a`, `tab:t1b` | `plain-t1-summary-1m.csv` |
-| `tab:capacity-tiers` | `plain-t1-q01-guidance.csv` |
+| `tab:capacity-tiers` | `plain-t1-q01-guidance.csv` (generated from `plain-t1-summary-1m.csv` and `plain-t1-m512-summary-1m.csv`) |
 | `tab:protocol-calibration` | `plain-e13-retry-success.csv` |
 | `tab:profiles-e2e` | `paper_profiles_e2e.csv`, `paper_profiles_protocol_evidence.csv` |
 | `tab:phase-breakdown` | `paper_p1_phase_breakdown.csv` |
 | `tab:g1g6` | `paper_g1g6.csv` |
 
-`tab:capacity-tiers` can also be regenerated from raw by
-`make_figs_p2p3p6.py` (part P9); the shipped `plain-t1-q01-guidance.csv` is the
-frozen result of that step.
+`tab:capacity-tiers` is regenerated from the two shipped 1M-trial summaries.
+The separate M=512 summary is retained because the original 160-cell grid did
+not include M=512:
+
+```bash
+python3 code/simulations/plain-t1/make_q01_guidance.py \
+  --output results/generated/plain-t1-q01-guidance.csv
+```
+
+The script rejects any selected configuration whose trial count is not exactly
+1,000,000. The corresponding M=512 raw CSV is archived separately for audit;
+it is not necessary to download the raw data to regenerate the table.
 
 ## Re-running a simulation from scratch
 
