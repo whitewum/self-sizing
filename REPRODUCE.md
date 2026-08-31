@@ -10,9 +10,10 @@ Paper labels (`fig:...`, `tab:...`) are the LaTeX labels in the manuscript.
 ## Artifact availability
 
 Source code and reproduction materials are maintained at
-<https://github.com/whitewum/self-sizing>. The released version corresponding
-to this artifact is archived at Zenodo:
-<https://doi.org/10.5281/zenodo.22186193>.
+<https://github.com/whitewum/self-sizing> and archived at Zenodo under the
+concept DOI <https://doi.org/10.5281/zenodo.22198044> (resolves to the latest
+version). The large raw simulation inputs are attached to the `v0.1` GitHub
+release, not the Zenodo archive; see `data/manifest.tsv`.
 
 ## Dependencies
 

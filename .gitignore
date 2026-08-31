@@ -1,6 +1,7 @@
-# Downloaded or staged large data
+# Downloaded or staged large data (hosted on the GitHub release; see data/manifest.tsv)
 data/cache/
 data/staging/
+data/external/
 downloads/
 
 # Generated outputs

@@ -8,8 +8,14 @@ its generating script and input in `REPRODUCE.md`.
 ## Artifact availability
 
 The actively maintained source repository is available at
-<https://github.com/whitewum/self-sizing>. This release is archived at Zenodo
-with DOI [10.5281/zenodo.22186193](https://doi.org/10.5281/zenodo.22186193).
+<https://github.com/whitewum/self-sizing>. Every tagged release is archived at
+Zenodo under the concept DOI
+[10.5281/zenodo.22198044](https://doi.org/10.5281/zenodo.22198044), which always
+resolves to the latest version.
+
+The large raw simulation inputs are not part of the Zenodo archive; they are
+attached to the [`v0.1` GitHub release](https://github.com/whitewum/self-sizing/releases/tag/v0.1),
+with byte counts and SHA-256 in `data/manifest.tsv`.
 
 ## Repository contents
 
