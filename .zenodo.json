@@ -1,0 +1,30 @@
+{
+  "title": "IBLTs Measure Before They Decode: Self-Sizing Set Reconciliation for Database Consistency Verification (artifact)",
+  "description": "<p>Public artifact for the paper <em>IBLTs Measure Before They Decode: Self-Sizing Set Reconciliation for Database Consistency Verification</em>: simulation and replay code, the reviewed aggregate CSVs behind the paper's figures and tables, and reproduction instructions.</p><p>The large raw simulation inputs are not part of this Zenodo archive; they are attached to the <a href=\"https://github.com/whitewum/self-sizing/releases/tag/v0.1\">v0.1 GitHub release</a>, with byte counts and SHA-256 recorded in <code>data/manifest.tsv</code>. Production comparison logs and other operational data are not distributed.</p>",
+  "upload_type": "software",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    { "name": "Wu, Min", "affiliation": "Hangzhou Dianzi University" },
+    { "name": "Qi, Ji", "affiliation": "China Mobile (Suzhou) Software Technology Co., Ltd." },
+    { "name": "Ye, Zhengsheng", "affiliation": "Nine Chapters (Zhejiang) Technology Co., Ltd." },
+    { "name": "Luo, Chengdui", "affiliation": "China Mobile (Suzhou) Software Technology Co., Ltd." },
+    { "name": "Lu, Shudong", "affiliation": "China Mobile (Suzhou) Software Technology Co., Ltd." },
+    { "name": "Wei, Zhengyang", "affiliation": "Nine Chapters (Zhejiang) Technology Co., Ltd." }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/whitewum/self-sizing",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "keywords": [
+    "set reconciliation",
+    "invertible Bloom lookup table",
+    "IBLT",
+    "database consistency",
+    "data verification",
+    "self-sizing"
+  ]
+}
