@@ -25,12 +25,12 @@ fi
 
 ${CXX:-c++} -std=c++17 -O2 -pthread \
   -I"$SCRIPT_DIR" \
-  "${openssl_cflags[@]}" \
+  ${openssl_cflags[@]+"${openssl_cflags[@]}"} \
   "$SCRIPT_DIR/tier1_failed_only_sweep.cpp" \
   "$SCRIPT_DIR/core/estimators/plain_f2_estimator.cpp" \
   "$SCRIPT_DIR/core/iblt/hash_family.cpp" \
   "$SCRIPT_DIR/core/iblt/standard_iblt.cpp" \
-  "${openssl_libs[@]}" \
+  ${openssl_libs[@]+"${openssl_libs[@]}"} \
   -o "$OUT"
 
 echo "built $OUT"
