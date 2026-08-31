@@ -1,0 +1,13 @@
+network,workers,method,p1_e2e_s,p1_extra_e2e_s,change_pct,status,repeats,note
+22.5ms/100Mbps,16,self-sizing,793.7,810.2,2.1,complete,2,formal matrix value
+22.5ms/100Mbps,32,self-sizing,636.6,692.6,8.8,complete,2,formal matrix value
+22.5ms/10Mbps,16,self-sizing,796.3,817.1,2.6,complete,2,formal matrix value
+22.5ms/10Mbps,32,self-sizing,657.4,691.5,5.2,complete,2,formal matrix value
+100ms/10Mbps,16,self-sizing,800.1,854.5,6.8,complete,2,formal matrix value
+100ms/10Mbps,32,self-sizing,654.4,700.686,7.1,rerun_stable,2,mean of 706.201 and 695.171; supersedes one 1076.129 outlier
+22.5ms/100Mbps,16,Merkle,1094.2,4134.6,277.9,complete,2,formal matrix value
+22.5ms/100Mbps,32,Merkle,652.4,3212.700,392.4,rerun_stable,1,independent rerun; earlier 3221.361 result differed by about 0.3 percent
+22.5ms/10Mbps,16,Merkle,1434.9,18502.5,1189.3,complete,2,formal matrix value
+22.5ms/10Mbps,32,Merkle,1020.3,,,failed_eof,0,HTTP EOF during drill; excluded from performance claims
+100ms/10Mbps,16,Merkle,1437.9,,,incomplete,0,stopped without a completed valid result
+100ms/10Mbps,32,Merkle,1011.2,,,failed_eof,0,HTTP EOF during drill; excluded from performance claims

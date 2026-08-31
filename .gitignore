@@ -1,0 +1,26 @@
+# Downloaded or staged large data
+data/cache/
+data/staging/
+downloads/
+
+# Generated outputs
+results/generated/
+work/
+code/build/
+code/**/build/
+code/**/figs/
+code/**/results/figs/
+figures/out/
+__pycache__/
+*.pyc
+
+# Local storage configuration and credentials
+config/storage.env
+config/*.secret
+*.credentials
+
+# macOS filesystem metadata
+.DS_Store
+
+# Local release notes; never publish internal provenance or storage details
+.artifact-internal.md

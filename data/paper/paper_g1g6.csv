@@ -1,0 +1,14 @@
+group,scenario,differences,difference_semantics,merkle_wall_s,self_sizing_wall_s,correctness,note
+G1,Redis-to-Redis zero difference,0,fixed_ground_truth,28.3,29.5,PASS,
+G1,Redis-to-Redis one difference,1,fixed_ground_truth,28.3,28.7,PASS,
+G2,Redis-to-Redis injected differences,100,fixed_ground_truth,39.9,29.0,PASS,
+G2,Redis-to-Redis injected differences,500,fixed_ground_truth,81.2,30.0,PASS,
+G2,Redis-to-Redis injected differences,937,fixed_ground_truth,121.0,29.6,PASS,
+G3,Redis-to-Pika burst with link interruption,40000,runtime_observed,511.6,,PASS,Merkle burst without interruption; approximately 40000 differences
+G3,Redis-to-Pika burst with link interruption,39594,runtime_observed,523.2,80.1,PASS,self-sizing observed 39502 recovered keys after in-flight synchronization
+G4,Cascade B-to-C replication lag,100,fixed_ground_truth,40.5,30.2,PASS,
+G4,Cascade B-to-C replication lag,500,fixed_ground_truth,81.9,30.4,PASS,
+G4,Cascade B-to-C replication lag,937,fixed_ground_truth,122.5,31.0,PASS,
+G5,Bidirectional active-active partition,2000,fixed_ground_truth,202.6,30.6,PASS,1000 endpoint-exclusive keys on each side; residual=0
+G6,Online target eviction and continued synchronization,1234,runtime_observed,159.5,,PASS,Merkle observation window
+G6,Online target eviction and continued synchronization,1163,runtime_observed,,34.5,PASS,self-sizing observation window

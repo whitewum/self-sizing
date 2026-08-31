@@ -1,0 +1,12 @@
+metric,value,unit,scope,note
+observation_window,90,days,successful production reconciliations,2026-04-29 through 2026-07-28
+deployable_runs,41603,table-runs,IBLT-deployable subset,empty tables empty runs and no-primary-key tables excluded
+zero_difference_share,0.564,fraction,IBLT-deployable subset,
+top_5_percent_duration_share,0.812,fraction,IBLT-deployable subset,ranked by table-level duration
+runs_ge_10m_rows_share,0.0582,fraction,IBLT-deployable subset,2423/41603; paper rounds to 5.8 percent
+runs_ge_10m_rows_duration_share,0.774,fraction,IBLT-deployable subset,sum of 48.4 and 29.0 percent size-bucket shares
+nonzero_difference_share_over_100m_rows,0.987,fraction,N greater than 100 million rows,
+first_round_512_coverage_nonzero,0.751,fraction,nonzero-difference runs,d_ms at most 393
+first_round_covered_difference_mass,0.00175,fraction,total nonzero difference mass,share contributed by runs with d_ms at most 393
+adjacent_state_unchanged_share,0.9925,fraction,21873 adjacent pairs,
+previous_capacity_hit_share,0.9803,fraction,periodic sequences,oracle capacity condition from the prior run

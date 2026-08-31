@@ -1,0 +1,6 @@
+size_bucket,min_rows_inclusive,max_rows_exclusive,runs,zero_difference_pct,median_duration_s,p90_duration_s,table_hours,table_time_pct,max_side_rows_pct
+lt_1k,0,1000,22970,53.7,2,11,29.2,0.7,0.0
+1k_to_1m,1000,1000000,13812,66.5,4,39,367.2,8.6,0.7
+1m_to_10m,1000000,10000000,2398,53.4,613,2326,575.3,13.4,3.7
+10m_to_100m,10000000,100000000,1969,33.2,2765,10270,2077.7,48.4,30.8
+ge_100m,100000000,,454,1.3,12248,17585,1244.9,29.0,64.8

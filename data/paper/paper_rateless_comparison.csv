@@ -1,0 +1,20 @@
+snapshot,network,method,repeat,wall_s,wire_bytes_per_side,status,memory_limit_gib,peak_memory_gib,note
+P1-extra,Direct,self-sizing,1,119.844,8000000,stable,16,,wire is approximately 8.00 MB
+P1-extra,Direct,self-sizing,2,115.615,8000000,stable,16,,wire is approximately 8.00 MB
+P1-extra,Direct,rateless-fixed,1,491.906,7985760,stable,16,,fixed prefix M=249555
+P1-extra,Direct,rateless-fixed,2,490.426,7985760,stable,16,,fixed prefix M=249555
+P1-extra,Direct,rateless-incremental,1,5715.791,6960000,stable,96,93,wire is approximately 6.96 MB
+P1-extra,Direct,rateless-incremental,2,5803.579,6960000,stable,96,93,wire is approximately 6.96 MB
+P2-next31m,Direct,self-sizing,1,5.584,91424,stable,16,,
+P2-next31m,Direct,self-sizing,2,5.611,91424,stable,16,,
+P2-next31m,Direct,rateless-fixed,1,25.115,7985760,stable,16,,fixed prefix M=249555
+P2-next31m,Direct,rateless-fixed,2,25.158,7985760,stable,16,,fixed prefix M=249555
+P2-next31m,Direct,rateless-incremental,1,141.393,189824,stable,96,92.6,prefix 5932
+P2-next31m,Direct,rateless-incremental,2,141.824,189824,stable,96,92.6,prefix 5932
+P2-next31m,22.5ms/10Mbps,self-sizing,1,5.511,91424,stable,16,,
+P2-next31m,22.5ms/10Mbps,self-sizing,2,5.554,91424,stable,16,,
+P2-next31m,22.5ms/10Mbps,rateless-fixed,1,31.342,7985760,stable,16,,fixed prefix M=249555
+P2-next31m,22.5ms/10Mbps,rateless-fixed,2,31.361,7985760,stable,16,,fixed prefix M=249555
+P2-next31m,22.5ms/10Mbps,rateless-incremental,1,140.715,189824,unstable,96,92.6,prefix 5932; all repeats retained
+P2-next31m,22.5ms/10Mbps,rateless-incremental,2,158.425,189824,unstable,96,92.6,prefix 5932; all repeats retained
+P2-next31m,22.5ms/10Mbps,rateless-incremental,3,139.113,189824,unstable,96,92.6,prefix 5932; all repeats retained

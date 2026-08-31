@@ -1,0 +1,10 @@
+network,profile,iblt_w16_s,iblt_w32_s,merkle_w16_s,merkle_w32_s,repeats,aggregation,note
+22.5ms/100Mbps,P1,793.7,636.6,1094.2,652.4,2,mean,
+22.5ms/100Mbps,P2,38.9,37.3,38.9,39.4,2,mean,
+22.5ms/100Mbps,P3,155.8,163.3,166.4,155.6,2,mean,
+22.5ms/10Mbps,P1,796.3,657.4,1434.9,1020.3,2,mean,
+22.5ms/10Mbps,P2,40.0,37.3,46.8,48.8,2,mean,
+22.5ms/10Mbps,P3,149.5,160.7,137.5,160.8,2,mean,Merkle W16 uses the formal rerun pair
+100ms/10Mbps,P1,800.1,654.4,1437.9,1011.2,2,mean,
+100ms/10Mbps,P2,38.8,37.0,46.6,48.7,2,mean,
+100ms/10Mbps,P3,151.7,160.5,137.6,160.2,2,mean,

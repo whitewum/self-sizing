@@ -1,0 +1,6 @@
+result_id,engine,workload_rows,path,wall_seconds,ratio_to_sidecar,execution_shape,permission_scope,repeats,notes
+legacy-postgresql-direct,PostgreSQL,10000000,sql_pushdown,,4.0,direct_expand_group_by,select_only,legacy,Earlier 10M-row implementation; per-row hash repeatedly evaluated
+legacy-mysql-direct,MySQL,10000000,sql_pushdown,,11.0,direct_expand_group_by,select_only,legacy,Earlier 10M-row implementation; per-row hash repeatedly evaluated
+p1-mysql-sidecar,MySQL,609668227,sidecar,626,1.0,16_range_jdbc_pull,select_only,1,Frozen 2026-08-23 comparison
+p1-mysql-single-query,MySQL,609668227,sql_pushdown,886,1.42,multi_ref_cte_derived_merge_off,select_and_session_controls,1,Tuned self-managed MySQL 8 environment; no CREATE TEMPORARY TABLES privilege needed
+p1-mysql-temp-table,MySQL,609668227,sql_pushdown,1120,1.79,explicit_temp_table_values_join,create_temporary_tables,1,Earlier two-step P1 implementation

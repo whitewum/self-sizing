@@ -1,0 +1,19 @@
+engine_pair,difference_size,difference_semantics,method,e2e_s,payload_mb,payload_min_mb,payload_max_mb,note
+Redis-to-Redis,0,fixed_ground_truth,self-sizing,29.546,0.0328,,,cumulative payload
+Redis-to-Redis,0,fixed_ground_truth,Merkle,28.286,0.2680,,,cumulative payload
+Redis-to-Redis,1,fixed_ground_truth,self-sizing,28.678,0.0328,,,cumulative payload
+Redis-to-Redis,1,fixed_ground_truth,Merkle,28.286,0.3989,,,cumulative payload
+Redis-to-Redis,100,fixed_ground_truth,self-sizing,28.983,0.0328,,,cumulative payload
+Redis-to-Redis,100,fixed_ground_truth,Merkle,39.932,12.455,,,cumulative payload
+Redis-to-Redis,500,fixed_ground_truth,self-sizing,29.952,0.0952,,,cumulative payload
+Redis-to-Redis,500,fixed_ground_truth,Merkle,81.200,60.009,,,cumulative payload
+Redis-to-Redis,937,fixed_ground_truth,self-sizing,29.573,0.1417,,,cumulative payload
+Redis-to-Redis,937,fixed_ground_truth,Merkle,121.033,105.290,,,cumulative payload
+Redis-to-Pika,100,fixed_ground_truth,self-sizing,73.3,0.0328,,,cumulative payload
+Redis-to-Pika,100,fixed_ground_truth,Merkle,82.6,12.8,,,cumulative payload
+Redis-to-Pika,500,fixed_ground_truth,self-sizing,73.5,0.0940,,,cumulative payload
+Redis-to-Pika,500,fixed_ground_truth,Merkle,123.2,59.0,,,cumulative payload
+Redis-to-Pika,937,fixed_ground_truth,self-sizing,73.9,0.1430,,,cumulative payload
+Redis-to-Pika,937,fixed_ground_truth,Merkle,164.0,106.0,,,cumulative payload
+Redis-to-Pika,40000,runtime_observed,self-sizing,80.1,,4.66,5.02,reported payload range; observed difference was approximately 40000
+Redis-to-Pika,40000,runtime_observed,Merkle,523.2,518.7,,,dynamic companion point
