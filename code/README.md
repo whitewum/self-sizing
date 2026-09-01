@@ -11,7 +11,7 @@ simulations and replay experiments.
   simulations;
 - `simulations/strata-baseline/` — Strata-style baseline and regret
   simulation;
-- `simulations/e13-cpp/` — the E13 provenance generator;
+- `simulations/e13-cpp/` — the E13 provenance generator and raw-grid auditor;
 - `e29-sidecar/` — synthetic relational replay utilities, the parameterized
   data generator, the rateless comparison harness, and the Oracle/MySQL
   composite-key IBLT/Merkle sidecar (`relational-sidecar/`, reuses `cm-redis`);

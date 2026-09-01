@@ -44,8 +44,8 @@ two standalone E27 panels, in the same run. It also draws `fig:rank`
 (`fig62c_dirty_block_rank`); `figures/make_rank_figure.py` is the standalone
 compact version.
 
-`code/simulations/plain-t1/make_e13_fig.py` draws the supplementary E13
-retry-success curve from `plain-e13-retry-success.csv`.
+`code/simulations/plain-t1/make_e13_fig.py` draws the supplementary five-tier
+E13 retry-success curve from `plain-e13-retry-success.csv`.
 
 ## Figures that need an archive download
 
@@ -96,6 +96,33 @@ python3 code/simulations/plain-t1/make_q01_guidance.py \
 The script rejects any selected configuration whose trial count is not exactly
 1,000,000. The corresponding M=512 raw CSV is archived separately for audit;
 it is not necessary to download the raw data to regenerate the table.
+
+The two summary inputs and generated five-tier selection can be audited with:
+
+```bash
+python3 code/simulations/plain-t1/audit_t1_1m_summaries.py
+```
+
+For E13, `plain-e13-retry-success-4tier.csv` preserves the original
+M1={256,512,1024,4096} lock. The M1=64 raw grid is regenerated and checked
+before extending that lock:
+
+```bash
+cd code/simulations/e13-cpp
+./build/tier1_failed_only_sweep \
+  --trials 10000 --threads 32 --M-list 64 --k-list 3 \
+  --d-over-m-list 0.3,0.5,0.7,0.8,0.9,1.0,1.2,1.5,2.0,3.0,5.0,10.0 \
+  --neg-ratios 0.1,0.5,0.9 --gamma-list 1.6,1.8,2.0 \
+  --out /tmp/plain-e13-m64-raw.csv
+python3 audit_retry_grid.py /tmp/plain-e13-m64-raw.csv
+cd ../../..
+python3 code/simulations/plain-t1/lock_e13.py \
+  --m64-raw /tmp/plain-e13-m64-raw.csv \
+  --output results/generated/plain-e13-retry-success.csv
+```
+
+The output contains both `all_m_ge_256`, which is the aggregate printed in the
+paper, and `all_five_tiers`, which is retained for full-grid diagnostics.
 
 ## Re-running a simulation from scratch
 

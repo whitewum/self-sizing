@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build the capacity-tier q01 guidance from the two 1M-trial summaries.
+"""Build five-tier q01 guidance from the two 1M-trial summaries.
 
 The base summary contains M in {64, 256, 1024, 4096}.  M=512 is supplied by
 its separate supplemental run.  Both inputs must contain exactly 1,000,000
 trials per selected configuration; mixing the historical 10k run into the
-paper-facing table is rejected explicitly.
+paper-facing table is rejected explicitly. Alpha uses the paper's finite-size
+decoder multiplier including its engineering margin: beta=1.3*1.2=1.56.
 """
 
 from __future__ import annotations
@@ -19,12 +20,12 @@ ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_BASE = ROOT / "data" / "paper" / "plain-t1-summary-1m.csv"
 DEFAULT_M512 = ROOT / "data" / "paper" / "plain-t1-m512-summary-1m.csv"
 DEFAULT_OUTPUT = ROOT / "results" / "generated" / "plain-t1-q01-guidance.csv"
-TARGET_MS = (64, 256, 512, 1024)
+TARGET_MS = (64, 256, 512, 1024, 4096)
 TARGET_LOADS = (0.8, 1.6, 8.0)
 TARGET_SIGNS = (-1.0, 0.0, 0.1, 0.5, 0.9)
 FIELDS = (
     "M", "k", "d", "load_d_over_M", "neg_ratio", "n_failed", "q01_emp",
-    "alpha_beta_1p3",
+    "alpha_beta_1p56",
 )
 
 
@@ -42,7 +43,7 @@ def selected_load(m: int, d: int) -> float | None:
 
 
 def recommended_alpha(q01: str) -> str:
-    value = Decimal("1.3") / Decimal(q01)
+    value = Decimal("1.56") / Decimal(q01)
     return str(value.quantize(Decimal("0.01"), rounding=ROUND_CEILING))
 
 
@@ -91,7 +92,7 @@ def main() -> int:
             "neg_ratio": f"{sign:g}",
             "n_failed": int(row["failed_n"]),
             "q01_emp": f"{q01:.6f}",
-            "alpha_beta_1p3": f"{1.3 / q01:.6f}",
+            "alpha_beta_1p56": f"{1.56 / q01:.6f}",
         })
 
     output_rows.sort(key=lambda row: (int(row["M"]), int(row["d"]), float(row["neg_ratio"])))
@@ -114,7 +115,7 @@ def main() -> int:
         worst = min(rows_m, key=lambda row: float(row["q01_emp"]))
         print(
             f"M={m}: q01_min={worst['q01_emp']} "
-            f"alpha_exact={worst['alpha_beta_1p3']} "
+            f"alpha_exact={worst['alpha_beta_1p56']} "
             f"alpha_recommended={recommended_alpha(str(worst['q01_emp']))} "
             f"n_failed={worst['n_failed']}"
         )

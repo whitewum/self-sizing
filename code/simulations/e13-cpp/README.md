@@ -56,6 +56,19 @@ that checks the binary and CSV schema is:
   --out /tmp/e13-cpp-smoke.csv
 ```
 
-Full replay is classified as `provenance-only` until the historical fast-baseline
-input and acceptance comparison have been independently verified. The frozen CSV
-used by the paper is authoritative.
+The M1=64 extension used by the paper can be replayed with the exact grid:
+
+```bash
+./build/tier1_failed_only_sweep \
+  --trials 10000 --threads 32 --M-list 64 --k-list 3 \
+  --d-over-m-list 0.3,0.5,0.7,0.8,0.9,1.0,1.2,1.5,2.0,3.0,5.0,10.0 \
+  --neg-ratios 0.1,0.5,0.9 --gamma-list 1.6,1.8,2.0 \
+  --out /tmp/plain-e13-m64-raw.csv
+python3 audit_retry_grid.py /tmp/plain-e13-m64-raw.csv
+```
+
+This produces 1,080,000 data rows (36 grid points, 10,000 trials per point,
+and three alpha values). The frozen run has gzip SHA-256
+`3d256e3fe8b7856f8ebecfbc5e792528d9bf404e27a7c27aafb82b7298b0ea0a`.
+CSV row order can vary with thread scheduling, so statistical aggregation and
+the auditor are the reproducibility contract rather than byte identity.

@@ -30,6 +30,10 @@ with byte counts and SHA-256 in `data/manifest.tsv`.
 The capacity-tier calibration uses two checked-in 1M-trial summaries: the
 original M={64,256,1024,4096} grid and a separate M=512 supplemental grid. The
 corresponding 40M-row M=512 raw is attached to the `v0.1` release for audit.
+The checked-in guidance covers all five tiers and uses the paper's finite-size
+decoder multiplier, beta=1.56. The protocol calibration additionally includes
+an M1=64 retry sweep; its raw grid can be regenerated with the public C++
+generator, while the frozen aggregate used by the paper is checked in.
 
 The repository does not contain live credentials, database binaries or vendor
 drivers, raw production logs, live database/Redis snapshots, or original

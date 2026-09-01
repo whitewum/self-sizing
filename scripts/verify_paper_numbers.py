@@ -41,12 +41,19 @@ def keyed(items: list[dict[str, str]], *fields: str) -> dict[tuple[str, ...], di
 
 
 def percent3(rate: str) -> str:
+    """Preserve the historical display rule based on the locked 6-digit rate."""
     return str((Decimal(rate) * 100).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP))
+
+
+def percent3_counts(row: dict[str, str]) -> str:
+    """Format a newly added row directly from its authoritative counts."""
+    rate = Decimal(row["success"]) / Decimal(row["trials"])
+    return str((rate * 100).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP))
 
 
 def capacity_alpha2(q01: float) -> float:
     """Round beta/q01 upward so the displayed multiplier remains safe."""
-    value = Decimal("1.3") / Decimal(str(q01))
+    value = Decimal("1.56") / Decimal(str(q01))
     return float(value.quantize(Decimal("0.01"), rounding=ROUND_CEILING))
 
 
@@ -104,8 +111,10 @@ def check_capacity_tiers() -> None:
     for row in source:
         m = int(row["M"])
         worst[m] = min(worst.get(m, float("inf")), float(row["q01_emp"]))
-    expected = {64: (0.6308, 2.07), 256: (0.8045, 1.62),
-                512: (0.8598, 1.52), 1024: (0.8997, 1.45)}
+    expected = {64: (0.6308, 2.48), 256: (0.8045, 1.94),
+                512: (0.8598, 1.82), 1024: (0.8997, 1.74),
+                4096: (0.9482, 1.65)}
+    require(set(worst) == set(expected), f"tab:capacity-tiers tiers: {sorted(worst)}")
     for m, (q01, alpha) in expected.items():
         close(round(worst[m], 4), q01)
         close(capacity_alpha2(worst[m]), alpha)
@@ -115,19 +124,20 @@ def check_protocol_calibration() -> None:
     source = keyed(rows("plain-e13-retry-success.csv"), "scope", "gamma", "M")
     overall = {"1.6": "99.854", "1.8": "99.957", "2": "99.967"}
     by_m = {
+        "64": ("86.589", "95.122", "98.168"),
         "256": ("99.336", "99.855", "99.896"),
         "512": ("99.901", "99.935", "99.948"),
         "1024": ("99.955", "99.969", "99.978"),
         "4096": ("99.988", "99.995", "99.992"),
     }
     for gamma, display in overall.items():
-        row = source[("all", gamma, "")]
+        row = source[("all_m_ge_256", gamma, "")]
         actual = percent3(row["success_rate"])
         require(actual == display, f"tab:protocol-calibration overall gamma={gamma}: {actual}")
     for m, displays in by_m.items():
         for gamma, display in zip(("1.6", "1.8", "2"), displays):
             row = source[("failed_only_by_M", gamma, m)]
-            actual = percent3(row["success_rate"])
+            actual = percent3_counts(row) if m == "64" else percent3(row["success_rate"])
             require(actual == display, f"tab:protocol-calibration M={m}, gamma={gamma}: {actual}")
 
 

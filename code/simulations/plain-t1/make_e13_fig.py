@@ -34,7 +34,13 @@ with _args.input.open(newline="") as fh:
 OUT = _args.outdir
 OUT.mkdir(parents=True, exist_ok=True)
 
-M_COLORS = {256: "#1f77b4", 512: "#2ca02c", 1024: "#ff7f0e", 4096: "#9467bd"}
+M_COLORS = {
+    64: "#d62728",
+    256: "#1f77b4",
+    512: "#2ca02c",
+    1024: "#ff7f0e",
+    4096: "#9467bd",
+}
 
 fig, axes = plt.subplots(1, 2, figsize=(9.2, 3.6), sharey=True)
 
@@ -55,7 +61,7 @@ for ax, scope, title in (
             color=color,
             lw=1.4,
             ms=4.5,
-            label=rf"$M_0={m}$",
+            label=rf"$M_1={m}$",
         )
     ax.axhline(0.01, color="k", lw=0.8, ls="--", alpha=0.6)
     ax.text(1.955, 0.011, r"$1\%$", fontsize=8, alpha=0.7)

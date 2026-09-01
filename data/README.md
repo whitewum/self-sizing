@@ -25,6 +25,9 @@ and SHA-256 before using it in the reproduction pipeline.
 | `paper_p2_worker_ablation.csv` | median and range for the P2 worker sweep | the range is min--max, not a confidence interval |
 | `paper_kv_scaling.csv` | Redis / Pika time and payload plotting input | dynamic burst points and static injection points are distinguished by field |
 | `plain-t1-m512-summary-1m.csv` | 40-cell M=512 supplemental grid, 1M trials per cell | completes the capacity-tier calibration at the same trial count as the main summary; raw is release-hosted |
+| `plain-t1-q01-guidance.csv` | 75 selected failed-only q0.01 rows over M=64,256,512,1024,4096 | generated only from the two 1M-trial summaries; alpha uses beta=1.56 |
+| `plain-e13-retry-success.csv` | five-tier E13 aggregate at alpha=1.6,1.8,2.0 | paper overall scope is explicitly `all_m_ge_256`; M1=64 failed-only rows are reported separately |
+| `plain-e13-retry-success-4tier.csv` | immutable pre-M64 E13 aggregate | baseline input to `lock_e13.py`, retained so the M64 extension is reproducible without historical raw files |
 | `plain-t1-fixed-d-raw.csv` | early 10k-trial-per-cell quick sample for fixed-d | quick checks only; the formal distribution figure uses the 4M-row `plain-t1-fixed-d-4m` in the manifest, never this file |
 
 The public treatment of production-derived data is described in
