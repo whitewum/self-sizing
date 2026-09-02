@@ -8,7 +8,7 @@ P2c  figs/t1_hist_chi2_slices.{svg,png}: two orthogonal slices through (M,d):
      with increasing d/M (space/accuracy tradeoff). The fixed-d row uses the
      supplemental H100 artifact results/t1_fixed_d_raw_h100.csv.
 P2b  figs/t1_qq_failed.png : failed-only vs unconditional QQ plots (T1b config:
-     k=3, neg_ratio=rand(-1), d=0.8M).
+     k=3, neg_ratio=rand(-1), d=0.8M) across five M tiers.
 P3+P6 results/t1c_bounds.csv (+ markdown to stdout): per M, failed-only
      empirical q05, order-statistic 95% lower confidence bound (Clopper-Pearson
      on the quantile), Cantelli bound (random signs) and Chebyshev bound
@@ -39,26 +39,33 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-MS = [64, 256, 1024, 4096]
+MS = [64, 256, 512, 1024, 4096]
 DELTA = 0.05
 INK = "#334155"
 GRAY = "#94a3b8"
 BLUE = "#2563eb"
 ORANGE = "#d97706"
 
-# The 160M-trial raw and the 4M fixed-d raw are archive downloads (see the
-# manifest); the 1M summary ships in data/paper/. Paths are overridable.
+# The 160M-trial raw, 40M M=512 raw, and 4M fixed-d raw are archive downloads
+# (see the manifest); the two 1M summaries ship in data/paper/. Paths are
+# overridable.
 _DATA = Path(__file__).resolve().parents[3] / "data" / "paper"
 _ap = argparse.ArgumentParser(description=__doc__)
 _ap.add_argument("--raw", type=Path, default=Path("results/t1_raw.csv"),
                  help="160M-trial raw CSV (archive download)")
+_ap.add_argument("--m512-raw", type=Path, required=True,
+                 help="40M-trial M=512 raw CSV (archive download)")
 _ap.add_argument("--fixed-d", type=Path, default=Path("results/t1_fixed_d_raw_h100.csv"),
                  help="4M fixed-d raw CSV (archive download)")
 _ap.add_argument("--summary", type=Path, default=Path("results/t1_summary.csv"),
                  help="160-cell 1M-trial summary (data/paper/plain-t1-summary-1m.csv)")
+_ap.add_argument("--m512-summary", type=Path,
+                 default=_DATA / "plain-t1-m512-summary-1m.csv",
+                 help="40-cell M=512 1M-trial summary")
 _args, _ = _ap.parse_known_args()
 
-df = pd.read_csv(_args.raw)
+df = pd.concat([pd.read_csv(_args.raw), pd.read_csv(_args.m512_raw)],
+               ignore_index=True)
 grid = df[df["kind"] == "grid"]
 
 plt.rcParams.update({
@@ -67,7 +74,7 @@ plt.rcParams.update({
 })
 
 # ---------- P2a: histogram + chi-square overlay (T1a config) ----------
-fig, axes = plt.subplots(1, 4, figsize=(11, 2.8), constrained_layout=True)
+fig, axes = plt.subplots(1, len(MS), figsize=(13.5, 2.8), constrained_layout=True)
 for ax, M in zip(axes, MS):
     d = round(1.6 * M)
     r = grid.query("M == @M and k == 3 and neg_ratio == 0.5 and d == @d")["dhat_over_d"].to_numpy()
@@ -172,7 +179,7 @@ if fixed_d_path.exists():
 
 # ---------- P2b: QQ failed-only vs unconditional (T1b config) ----------
 qs = np.linspace(0.01, 0.99, 99)
-fig, axes = plt.subplots(2, 2, figsize=(7.2, 6.2), constrained_layout=True)
+fig, axes = plt.subplots(2, 3, figsize=(9.8, 6.2), constrained_layout=True)
 for ax, M in zip(axes.flat, MS):
     d = round(0.8 * M)
     sub = grid.query("M == @M and k == 3 and neg_ratio == -1 and d == @d")
@@ -186,6 +193,8 @@ for ax, M in zip(axes.flat, MS):
     ax.set_aspect("equal")
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(color=GRAY, alpha=0.25, lw=0.5)
+for ax in axes.flat[len(MS):]:
+    ax.axis("off")
 for ax in axes[:, 0]:
     ax.set_ylabel("failed-only quantile")
 for ax in axes[1, :]:
@@ -224,11 +233,12 @@ tab = pd.DataFrame(rows)
 tab.to_csv("results/t1c_bounds.csv", index=False)
 print(tab.to_string(index=False))
 
-# ---------- P5: full-grid overview (all 160 cells, from t1_summary.csv) ----------
-sm = pd.read_csv(_args.summary)
+# ---------- P5: full-grid overview (all 200 cells, from two summaries) ----------
+sm = pd.concat([pd.read_csv(_args.summary), pd.read_csv(_args.m512_summary)],
+               ignore_index=True)
 sm = sm[sm["kind"] == "grid"].copy()
-assert len(sm) == 160
-xpos = {64: 0, 256: 1, 1024: 2, 4096: 3}
+assert len(sm) == 200
+xpos = {m: i for i, m in enumerate(MS)}
 rng = np.random.default_rng(0)  # display jitter only
 jit = rng.uniform(-0.18, 0.18, len(sm))
 x = sm["M"].map(xpos).to_numpy() + jit
@@ -238,14 +248,14 @@ ax = axes[0]
 ax.axhline(0, color=GRAY, lw=0.8, ls="--")
 ax.scatter(x, sm["mean_ratio"] - 1, s=10, color=BLUE, alpha=0.55, edgecolors="none")
 ax.set_ylabel(r"mean$(\widehat{d}/d)-1$")
-ax.set_title("Per-cell mean bias (160 cells)", fontsize=9, color=INK)
+ax.set_title("Per-cell mean bias (200 cells)", fontsize=9, color=INK)
 ax = axes[1]
 ax.axhline(1, color=GRAY, lw=0.8, ls="--")
 ax.scatter(x, sm["rsd_emp_over_theory"], s=10, color=ORANGE, alpha=0.55, edgecolors="none")
 ax.set_ylabel("RSD empirical / closed-form")
-ax.set_title("Per-cell RSD ratio (160 cells)", fontsize=9, color=INK)
+ax.set_title("Per-cell RSD ratio (200 cells)", fontsize=9, color=INK)
 for ax in axes:
-    ax.set_xticks(range(4), [f"$M={m}$" for m in MS])
+    ax.set_xticks(range(len(MS)), [f"$M={m}$" for m in MS])
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", color=GRAY, alpha=0.25, lw=0.5)
 fig.savefig("figs/t1_grid_overview.png", dpi=200)

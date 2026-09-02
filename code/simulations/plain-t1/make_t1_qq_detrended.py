@@ -5,15 +5,16 @@ vs unconditional quantile comparison (P2b, Figure t1_qq_failed).
 For each M, at each quantile level p we plot
     Delta(p) = q_failed(p) - q_unconditional(p)
 against p.  The 45-degree line of the ordinary Q-Q plot becomes the shared
-horizontal y=0 line, so all four M panels can be overlaid in one plot and
+horizontal y=0 line, so all five M tiers can be overlaid in one plot and
 small deviations are visible on a tight +/- scale.
 
 A null band shows +/- 1.96 * SE(Delta) under the hypothesis that the
 failed-only and unconditional samples share the same distribution (chi-square
 density as the reference density for the quantile SE).
 
-Reads the same input as make_figs_p2p3p6.py P2b (results/t1_raw.csv).
-The release-manifest object `plain-t1-raw-160m` is the official input.
+Reads the same inputs as make_figs_p2p3p6.py P2b (the original 160M-trial raw
+plus the supplemental 40M-trial M=512 raw).  The release-manifest objects
+`plain-t1-raw-160m` and `plain-t1-m512-raw-40m` are the official inputs.
 
 Output: figs/t1_qq_detrended.{png,svg}
 """
@@ -41,12 +42,16 @@ HERE = Path(__file__).resolve().parent
 _ap = argparse.ArgumentParser(description=__doc__)
 _ap.add_argument("--raw", type=Path, default=HERE / "results" / "t1_raw.csv",
                  help="160M-trial raw CSV (archive download; see the manifest)")
+_ap.add_argument("--m512-raw", type=Path, required=True,
+                 help="40M-trial M=512 raw CSV (archive download; see the manifest)")
 _ap.add_argument("--outdir", type=Path, default=HERE / "figs")
 _args, _ = _ap.parse_known_args()
 
-DF = pd.read_csv(
-    _args.raw,
-    usecols=["kind", "M", "k", "d", "neg_ratio", "dhat_over_d", "failed"],
+USECOLS = ["kind", "M", "k", "d", "neg_ratio", "dhat_over_d", "failed"]
+DF = pd.concat(
+    [pd.read_csv(_args.raw, usecols=USECOLS),
+     pd.read_csv(_args.m512_raw, usecols=USECOLS)],
+    ignore_index=True,
 )
 grid = DF[DF["kind"] == "grid"]
 
@@ -60,8 +65,8 @@ plt.rcParams.update({
     "xtick.color": INK, "ytick.color": INK, "axes.linewidth": 0.8,
 })
 
-MS = [64, 256, 1024, 4096]
-COLORS = ["#2563eb", "#22c55e", "#d97706", "#7f1d1d"]
+MS = [64, 256, 512, 1024, 4096]
+COLORS = ["#2563eb", "#22c55e", "#06b6d4", "#d97706", "#7f1d1d"]
 qs = np.linspace(0.01, 0.99, 99)
 
 fig, ax = plt.subplots(figsize=(6.4, 3.6), constrained_layout=True)
@@ -97,7 +102,7 @@ ax.legend(fontsize=7.5, frameon=False, loc="lower right", ncol=1)
 for ext in ("png", "svg"):
     _args.outdir.mkdir(parents=True, exist_ok=True)
     fig.savefig(_args.outdir / f"t1_qq_detrended.{ext}", dpi=220)
-print("wrote", HERE / "figs" / "t1_qq_detrended.png")
+print("wrote", _args.outdir / "t1_qq_detrended.png")
 
 for M in MS:
     d = round(0.8 * M)

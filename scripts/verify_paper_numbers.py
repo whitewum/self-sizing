@@ -26,6 +26,11 @@ def rows(name: str) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
+def t1_rows() -> list[dict[str, str]]:
+    """Return the complete five-tier T1 grid from its two public summaries."""
+    return rows("plain-t1-summary-1m.csv") + rows("plain-t1-m512-summary-1m.csv")
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise CheckFailure(message)
@@ -58,7 +63,7 @@ def capacity_alpha2(q01: float) -> float:
 
 
 def check_t1a() -> None:
-    source = rows("plain-t1-summary-1m.csv")
+    source = t1_rows()
     selected = {
         int(row["M"]): row for row in source
         if row["kind"] == "grid" and row["k"] == "3" and row["neg_ratio"] == "0.5"
@@ -67,6 +72,7 @@ def check_t1a() -> None:
     expected = {
         64: (102, "0.9996", "0.1774", "0.1773", "0.6309", "0.6326"),
         256: (410, "1.0000", "0.0885", "0.0885", "0.8062", "0.8056"),
+        512: (819, "1.0000", "0.0625", "0.0625", "0.8601", "0.8602"),
         1024: (1638, "0.9999", "0.0442", "0.0442", "0.9001", "0.9000"),
         4096: (6554, "1.0000", "0.0221", "0.0221", "0.9493", "0.9493"),
     }
@@ -82,7 +88,7 @@ def check_t1a() -> None:
 
 
 def check_t1b() -> None:
-    source = rows("plain-t1-summary-1m.csv")
+    source = t1_rows()
     selected = {
         int(row["M"]): row for row in source
         if row["kind"] == "grid" and row["k"] == "3" and row["neg_ratio"] == "-1"
@@ -91,6 +97,7 @@ def check_t1b() -> None:
     expected = {
         64: (51, "0.68", "0.9998", "0.6308", "0.6326"),
         256: (205, "0.54", "1.0001", "0.8050", "0.8056"),
+        512: (410, "0.42", "1.0001", "0.8598", "0.8602"),
         1024: (819, "0.26", "1.0001", "0.8998", "0.9000"),
         4096: (3277, "0.03", "0.9999", "0.9490", "0.9493"),
     }

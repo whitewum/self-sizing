@@ -1,9 +1,9 @@
 # Reproducing the paper figures and tables
 
-Every paper figure and table maps to one script in this repository and one
-input file. The tables below give that mapping, the command, and whether the
-input ships in `data/paper/` or must be downloaded from the public archive
-listed in `data/manifest.tsv`.
+Every paper figure and table maps to one script in this repository and its
+declared input file(s). The tables below give that mapping, the command, and
+whether each input ships in `data/paper/` or must be downloaded from the public
+archive listed in `data/manifest.tsv`.
 
 Paper labels (`fig:...`, `tab:...`) are the LaTeX labels in the manuscript.
 
@@ -30,7 +30,7 @@ The plotting scripts write PNG and SVG next to themselves (`figs/`,
 
 | Paper label | Script | Input | Command |
 |---|---|---|---|
-| `fig:rsd-grid` | `code/simulations/plain-t1/make_t1_grid_figs.py` | `plain-t1-summary-1m.csv` | `python3 code/simulations/plain-t1/make_t1_grid_figs.py` |
+| `fig:rsd-grid` | `code/simulations/plain-t1/make_t1_grid_figs.py` | `plain-t1-summary-1m.csv`, `plain-t1-m512-summary-1m.csv` | `python3 code/simulations/plain-t1/make_t1_grid_figs.py --input data/paper/plain-t1-summary-1m.csv --m512-input data/paper/plain-t1-m512-summary-1m.csv` |
 | `fig:regret` | `code/simulations/strata-baseline/make_regret_fig.py` | `regret-pipeline-summary.csv` | `python3 code/simulations/strata-baseline/make_regret_fig.py` |
 | `fig:prod-teaser` | `figures/make_s6_figures.py` (`fig62_production_profile`) | `production-d-quantiles.csv`, `production-duration-quantiles.csv` | `python3 figures/make_s6_figures.py` |
 | `fig:rank` | `figures/make_rank_figure.py` | `production-rank-buckets-anonymized.csv` | `python3 figures/make_rank_figure.py data/paper/production-rank-buckets-anonymized.csv --output figures/out/fig_rank.svg` |
@@ -54,7 +54,7 @@ The 160M-trial raw (`plain-t1-raw-160m`), the 40M M=512 supplemental raw
 260k E8 failure-bias subset
 (`plain-t1-e8-failure-bias`) are hosted externally; see `data/manifest.tsv` for
 the archive location, byte count, and SHA-256. Each script takes the downloaded
-file as an argument.
+file(s) as arguments.
 
 The M=512 raw is retained for audit provenance. The capacity-tier table is
 regenerated from its checked-in 1M-trial summary, so this 218 MB download is
@@ -62,8 +62,8 @@ not required for the normal table-reproduction path.
 
 | Paper label | Script | Downloaded input | Command |
 |---|---|---|---|
-| `fig:estimator-validation`, `fig:estimator-validation-hist` | `code/simulations/plain-t1/make_figs_p2p3p6.py` | `plain-t1-raw-160m`, `plain-t1-fixed-d-4m` | `python3 make_figs_p2p3p6.py --raw <raw160m.csv> --fixed-d <fixedd4m.csv> --summary data/paper/plain-t1-summary-1m.csv` (needs `scipy`; run from a directory with `figs/` and `results/`) |
-| `fig:qq-detrended` | `code/simulations/plain-t1/make_t1_qq_detrended.py` | `plain-t1-raw-160m` | `python3 make_t1_qq_detrended.py --raw <raw160m.csv>` |
+| `fig:estimator-validation`, `fig:estimator-validation-hist` | `code/simulations/plain-t1/make_figs_p2p3p6.py` | `plain-t1-raw-160m`, `plain-t1-m512-raw-40m`, `plain-t1-fixed-d-4m`, both 1M summaries | `python3 make_figs_p2p3p6.py --raw <raw160m.csv> --m512-raw <m512raw.csv> --fixed-d <fixedd4m.csv> --summary data/paper/plain-t1-summary-1m.csv --m512-summary data/paper/plain-t1-m512-summary-1m.csv` (needs `scipy`; run from a directory with `figs/` and `results/`) |
+| `fig:qq-detrended` | `code/simulations/plain-t1/make_t1_qq_detrended.py` | `plain-t1-raw-160m`, `plain-t1-m512-raw-40m` | `python3 make_t1_qq_detrended.py --raw <raw160m.csv> --m512-raw <m512raw.csv>` |
 | `fig:bias-fail`, `fig:estimator-validation-fail` | `code/simulations/plain-t1/make_fail_cond_bias_fig.py` | `plain-t1-e8-failure-bias` | `python3 make_fail_cond_bias_fig.py --e8-raw <e8-bias.csv>` (irregular half uses the shipped `irregular-failure-summary.csv`) |
 
 ## Tables
@@ -85,8 +85,10 @@ python3 scripts/verify_paper_numbers.py
 | `tab:g1g6` | `paper_g1g6.csv` |
 
 `tab:capacity-tiers` is regenerated from the two shipped 1M-trial summaries.
-The separate M=512 summary is retained because the original 160-cell grid did
-not include M=512:
+The five-tier T1 grid has 200 cells: the original 160-cell summary covers
+M={64,256,1024,4096}, and the supplemental summary adds the 40 M=512 cells.
+The separate M=512 summary is retained because the original grid did not
+include M=512:
 
 ```bash
 python3 code/simulations/plain-t1/make_q01_guidance.py \

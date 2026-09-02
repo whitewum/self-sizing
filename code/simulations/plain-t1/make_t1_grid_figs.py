@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Render the 1M-trial split full-grid figures for Theorem 3.1 and Corollary 3.3.
 
-Reads the authoritative 160-cell, 1M-trial T1 summary and performs no
+Reads the authoritative 160-cell summary plus the separate 40-cell M=512
+summary (both at 1M trials per cell) and performs no
 re-simulation.  The earlier 10k-trial render is archived under
 ``archive/10k-grid/figs``.
 
@@ -22,7 +23,7 @@ import pandas as pd
 
 matplotlib.use("Agg")
 
-MS = [64, 256, 1024, 4096]
+MS = [64, 256, 512, 1024, 4096]
 INK = "#334155"
 GRAY = "#94a3b8"
 BLUE = "#2563eb"
@@ -35,6 +36,9 @@ _DATA = Path(__file__).resolve().parents[3] / "data" / "paper"
 _ap = argparse.ArgumentParser(description=__doc__)
 _ap.add_argument("--input", type=Path, default=_DATA / "plain-t1-summary-1m.csv",
                  help="160-cell 1M-trial T1 summary CSV")
+_ap.add_argument("--m512-input", type=Path,
+                 default=_DATA / "plain-t1-m512-summary-1m.csv",
+                 help="40-cell M=512 supplemental 1M-trial summary CSV")
 _ap.add_argument("--outdir", type=Path, default=ROOT / "figs")
 _args, _ = _ap.parse_known_args()
 SUMMARY = _args.input
@@ -66,9 +70,12 @@ def save_both(fig: plt.Figure, stem: str) -> None:
     plt.close(fig)
 
 
-summary = pd.read_csv(SUMMARY)
+summary = pd.concat(
+    [pd.read_csv(SUMMARY), pd.read_csv(_args.m512_input)],
+    ignore_index=True,
+)
 grid = summary[summary["kind"] == "grid"].copy()
-assert len(grid) == 160, len(grid)
+assert len(grid) == 200, len(grid)
 
 xpos = {m: i for i, m in enumerate(MS)}
 rng = np.random.default_rng(0)
@@ -76,14 +83,13 @@ grid["x"] = grid["M"].map(xpos) + rng.uniform(-0.10, 0.10, len(grid))
 
 # Figure F3a: Theorem 3.1. The estimator is exactly unbiased; the nonzero
 # vertical scatter is finite-Monte-Carlo error. A continuous +/-3-SE envelope
-# makes its approximately (M-1)^(-1/2) contraction visible. Because the four
-# displayed M values form a geometric sequence, M(x)=64*4^x interpolates the
-# envelope naturally along the categorical x-axis.
+# makes its approximately (M-1)^(-1/2) contraction visible. The envelope is
+# interpolated over the categorical five-tier x-axis.
 fig, ax = plt.subplots(figsize=(5.8, 3.4), constrained_layout=True)
 n_trials = int(grid["trials"].iloc[0])
-x_envelope = np.linspace(-0.15, 3.15, 500)
-m_envelope = 64.0 * np.power(4.0, x_envelope)
-band_envelope = 3.0 * np.sqrt(2.0 / ((m_envelope - 1.0) * n_trials))
+x_envelope = np.linspace(-0.15, len(MS) - 0.85, 500)
+band_tiers = 3.0 * np.sqrt(2.0 / ((np.asarray(MS) - 1.0) * n_trials))
+band_envelope = np.interp(x_envelope, np.arange(len(MS)), band_tiers)
 ax.fill_between(
     x_envelope,
     -band_envelope,
