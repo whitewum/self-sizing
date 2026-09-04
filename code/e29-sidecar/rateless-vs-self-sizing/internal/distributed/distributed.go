@@ -147,7 +147,9 @@ func (e *Endpoint) Serve(addr string) error {
 		return fmt.Errorf("verify snapshot: %w", err)
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, map[string]any{"ok": true}) })
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, map[string]any{"ok": true, "mapper_version": plain.MapperVersion})
+	})
 	mux.HandleFunc("/ss/build", e.handlePlain)
 	mux.HandleFunc("/rf/build", e.handleFixed)
 	mux.HandleFunc("/ri/prepare", e.handlePrepare)
@@ -501,6 +503,9 @@ func RunControllerWithOptions(arm, sourceURL, targetURL string, m1 int, alpha fl
 		result.Batch = batch
 	}
 	client := &http.Client{Timeout: timeout}
+	if err := verifyMapperHandshake(client, sourceURL, targetURL); err != nil {
+		return result, err
+	}
 	switch arm {
 	case "ss":
 		return runDistributedSS(client, sourceURL, targetURL, m1, alpha, seed1, seed2, &result)
@@ -935,6 +940,31 @@ func requestPlain(client *http.Client, url string, req Request) (PlainResponse, 
 	return out, requestJSON(client, url, req, &out)
 }
 
+type healthResponse struct {
+	OK            bool `json:"ok"`
+	MapperVersion int  `json:"mapper_version"`
+}
+
+func verifyMapperHandshake(client *http.Client, sourceURL, targetURL string) error {
+	var source, target healthResponse
+	if err := getJSON(client, sourceURL+"/health", &source); err != nil {
+		return fmt.Errorf("source mapper handshake: %w", err)
+	}
+	if err := getJSON(client, targetURL+"/health", &target); err != nil {
+		return fmt.Errorf("target mapper handshake: %w", err)
+	}
+	if !source.OK || !target.OK {
+		return fmt.Errorf("mapper handshake rejected unhealthy endpoint: source=%+v target=%+v", source, target)
+	}
+	if source.MapperVersion != target.MapperVersion {
+		return fmt.Errorf("mapper version mismatch: source=%d target=%d", source.MapperVersion, target.MapperVersion)
+	}
+	if source.MapperVersion != plain.MapperVersion {
+		return fmt.Errorf("unsupported mapper version: peer=%d local=%d", source.MapperVersion, plain.MapperVersion)
+	}
+	return nil
+}
+
 func requestJSON(client *http.Client, url string, req any, out any) error {
 	var body io.Reader
 	if req != nil {
@@ -957,6 +987,23 @@ func requestJSON(client *http.Client, url string, req any, out any) error {
 	if resp.StatusCode != http.StatusOK {
 		raw, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 		return fmt.Errorf("%s: http %d: %s", url, resp.StatusCode, raw)
+	}
+	return json.NewDecoder(resp.Body).Decode(out)
+}
+
+func getJSON(client *http.Client, url string, out any) error {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		msg, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		return fmt.Errorf("%s: http %d: %s", url, resp.StatusCode, msg)
 	}
 	return json.NewDecoder(resp.Body).Decode(out)
 }

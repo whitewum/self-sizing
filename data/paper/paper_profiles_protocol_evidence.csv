@@ -1,4 +1,4 @@
 profile,row_count,d_ms,dhat_min,dhat_max,dhat_display_min,dhat_display_max,expected_plus,expected_minus,iblt_runs,success_runs,zero_residual_runs,recovered_count_match_runs,decode_path,note
-P1,609671577,93130,86489.492469,109315.478716,86489,109315,48240,44890,12,12,12,12,second_round,Three network tiers times W16/W32 times two repeats
-P2,31034507,1392,1301.893255,1468.141454,1302,1468,720,672,12,12,12,12,second_round,Three network tiers times W16/W32 times two repeats
-P3,154356834,18,16.670596,20.694172,16.7,20.7,11,7,12,12,12,12,first_round,All runs decoded directly at M1=512
+P1,609671577,93130,83664.049771,100693.833661,83664,100694,48240,44890,12,12,12,12,second_round,Three network tiers times W16/W32 times two repeats
+P2,31034507,1392,1247.811395,1464.413883,1248,1464,720,672,12,12,12,12,second_round,Three network tiers times W16/W32 times two repeats
+P3,154356834,18,16.670596,19.352980,16.7,19.4,11,7,12,12,12,12,first_round,All runs decoded directly at M1=512

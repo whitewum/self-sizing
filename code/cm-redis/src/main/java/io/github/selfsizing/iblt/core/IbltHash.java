@@ -38,12 +38,14 @@ public final class IbltHash {
     }
 
     /**
-     * Cell positions positions(fp, M): k=3 with de-duplication (a collision is
-     * not XORed twice, otherwise it would cancel out).
+     * Cell positions positions(fp, M): k=3 distinct cells sampled without
+     * replacement, matching the paper's uniform k-subset model. Three
+     * independent splitmix64 streams feed rejection sampling: on a collision
+     * with an earlier cell, the stream advances by {@link IbltConstants#RETRY_STEP}.
      *
      * @param fp 56-bit fingerprint
      * @param m  number of cells (bucket_count)
-     * @return 1 to 3 de-duplicated cell indices
+     * @return 3 distinct cell indices
      */
     public static int[] positions(long fp, long m) {
         return positions(fp, m, 0L);
@@ -59,18 +61,25 @@ public final class IbltHash {
         long seedB = hashSeed == 0 ? BUCKET_SEED_B : sm64(BUCKET_SEED_B ^ hashSeed);
         long seedC = hashSeed == 0 ? BUCKET_SEED_C : sm64(BUCKET_SEED_C ^ hashSeed);
         int a = (int) Long.remainderUnsigned(sm64(seedA + fp), m);
-        int b = (int) Long.remainderUnsigned(sm64(seedB + fp), m);
-        int c = (int) Long.remainderUnsigned(sm64(seedC + fp), m);
-        if (b == a && c == a) {
-            return new int[]{a};
-        }
-        if (b == a) {
-            return new int[]{a, c};
-        }
-        if (c == a || c == b) {
-            return new int[]{a, b};
-        }
+        int b = distinctPosition(fp, seedB, m, a);
+        int c = distinctPosition(fp, seedC, m, a, b);
         return new int[]{a, b, c};
+    }
+
+    private static int distinctPosition(long fp, long base, long m, int... avoid) {
+        for (long k = 0; ; k++) {
+            int p = (int) Long.remainderUnsigned(sm64(base + fp + k * IbltConstants.RETRY_STEP), m);
+            boolean duplicate = false;
+            for (int q : avoid) {
+                if (p == q) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (!duplicate) {
+                return p;
+            }
+        }
     }
 
     /** checksum(fp) = splitmix64(CHECKSUM_SEED + fp); must be non-linear. */
@@ -148,6 +157,10 @@ public final class IbltHash {
         long fp2 = 0xBC6A786948D774L;
         ok &= checksum(fp2) == 0x2AE6BC9BD7B884D7L;
         ok &= java.util.Arrays.equals(positions(fp2, 6000), new int[]{1431, 5820, 2338});
+
+        // Rejection sampling: fp=0x20d at m=6000 collides on the raw stream-B
+        // candidate, so positions must re-sample to three distinct cells.
+        ok &= java.util.Arrays.equals(positions(0x20dL, 6000), new int[]{5167, 4921, 4024});
         return ok;
     }
 }

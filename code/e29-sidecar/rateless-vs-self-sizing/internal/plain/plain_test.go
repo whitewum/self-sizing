@@ -28,6 +28,16 @@ func TestJavaInteropVectors(t *testing.T) {
 			t.Fatalf("seeded Positions=%v want=%v", seededGot, seededWant)
 		}
 	}
+	// Rejection sampling: for fp=0x20d at m=6000 the raw stream-B candidate
+	// collides with stream A, so Positions must re-sample to three distinct
+	// cells. Byte-identical to IbltHash.positions(0x20d,6000,0).
+	collideWant := []int{5167, 4921, 4024}
+	collideGot := Positions(0x20d, 6000, 0)
+	for i := range collideWant {
+		if collideGot[i] != collideWant[i] {
+			t.Fatalf("collision Positions=%v want=%v", collideGot, collideWant)
+		}
+	}
 }
 
 func TestDecodeSignedDifference(t *testing.T) {

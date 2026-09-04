@@ -170,9 +170,9 @@ def check_profiles_e2e() -> None:
         )
         require(actual == expected, f"tab:profiles-e2e {key}: {actual}")
     expected_protocol = {
-        "P1": (93130, 86489, 109315, "second_round"),
-        "P2": (1392, 1302, 1468, "second_round"),
-        "P3": (18, 16.7, 20.7, "first_round"),
+        "P1": (93130, 83664, 100694, "second_round"),
+        "P2": (1392, 1248, 1464, "second_round"),
+        "P3": (18, 16.7, 19.4, "first_round"),
     }
     for profile, expected in expected_protocol.items():
         row = evidence[(profile,)]

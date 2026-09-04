@@ -59,7 +59,7 @@ public final class ConcurrentResolveSelfTest {
     private static SidecarClient resolver(String pk, CyclicBarrier overlap) {
         return new SidecarClient() {
             @Override public String label() { return pk; }
-            @Override public String health() { return "ok"; }
+            @Override public String health() { return "ok mapperVersion=2"; }
             @Override public BuildSketchRemote buildSketch(int m, long seed) { throw unsupported(); }
             @Override public IbltSketch rebucket(String session, int m, long seed) { throw unsupported(); }
             @Override public List<String> resolveIds(String session, long[] ids) throws Exception {

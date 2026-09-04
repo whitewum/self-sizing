@@ -7,6 +7,7 @@ import io.github.selfsizing.iblt.relational.StreamingResolveClient;
 import io.github.selfsizing.iblt.core.IbltDecodeResult;
 import io.github.selfsizing.iblt.core.IbltDecoder;
 import io.github.selfsizing.iblt.core.IbltSketch;
+import io.github.selfsizing.iblt.controller.MapperHandshake;
 import io.github.selfsizing.iblt.sidecar.RecheckResponse;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ final class ConcurrentResolveIbltCompareController {
         if (controllerWorkers < 1) {
             throw new IllegalArgumentException("controllerWorkers must be positive");
         }
+        MapperHandshake.verify(source, target);
         ExecutorService pool = Executors.newFixedThreadPool(controllerWorkers);
         try {
             int decodedM = plan.bucketCount0();

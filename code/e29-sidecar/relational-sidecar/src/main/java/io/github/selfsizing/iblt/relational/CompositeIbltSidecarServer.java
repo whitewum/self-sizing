@@ -1,6 +1,7 @@
 package io.github.selfsizing.iblt.relational;
 
 import io.github.selfsizing.iblt.core.FingerprintStore;
+import io.github.selfsizing.iblt.core.IbltConstants;
 import io.github.selfsizing.iblt.core.IbltHash;
 import io.github.selfsizing.iblt.core.IbltSketch;
 import io.github.selfsizing.iblt.core.PkTupleCanonicalizer;
@@ -746,7 +747,8 @@ public final class CompositeIbltSidecarServer {
     }
 
     private void health(HttpExchange ex) throws IOException {
-        send(ex, 200, "ok " + dialect + " table=" + table + " pk=" + String.join(",", pkColumns)
+        send(ex, 200, "ok " + dialect + " mapperVersion=" + IbltConstants.MAPPER_VERSION
+                + " table=" + table + " pk=" + String.join(",", pkColumns)
                 + " oracleParallelDegree=" + oracleParallelDegree
                 + " scanMode=" + scanMode + " scanShards=" + scanShards
                 + " scanWorkers=" + scanWorkers + " scanShardColumn=" + scanShardColumn

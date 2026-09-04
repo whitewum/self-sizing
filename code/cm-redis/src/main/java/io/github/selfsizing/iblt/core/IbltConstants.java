@@ -29,7 +29,18 @@ public final class IbltConstants {
     /** Checksum seed (must be non-linear; uses splitmix64). */
     public static final long CHECKSUM_SEED = 0x9E3779B97F4A7C15L;
 
-    /** Each element goes into k=3 cells (may be &lt;3 after de-duplication). */
+    /**
+     * Per-retry salt advancing a hash stream on a collision during the
+     * rejection sampling of the k=3 distinct cell positions. Unrelated to
+     * {@link #CHECKSUM_SEED}; the shared value is only the golden-ratio
+     * constant.
+     */
+    public static final long RETRY_STEP = 0x9E3779B97F4A7C15L;
+
+    /** Wire/runtime mapper version; peers with another version are incompatible. */
+    public static final int MAPPER_VERSION = 2;
+
+    /** Each element goes into k=3 distinct cells (sampled without replacement). */
     public static final int K = 3;
 
     /** The fingerprint occupies 56 bits, in [0, 2^56). */

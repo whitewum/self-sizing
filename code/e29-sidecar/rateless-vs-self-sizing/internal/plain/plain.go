@@ -6,11 +6,16 @@ import (
 )
 
 const (
-	K                   = 3
-	seedA        uint64 = 0xA1B2C3D4E5F60718
-	seedB        uint64 = 0x1234567890ABCDEF
-	seedC        uint64 = 0xFEDCBA9876543210
-	checksumSeed        = 0x9E3779B97F4A7C15
+	MapperVersion        = 2
+	K                    = 3
+	seedA         uint64 = 0xA1B2C3D4E5F60718
+	seedB         uint64 = 0x1234567890ABCDEF
+	seedC         uint64 = 0xFEDCBA9876543210
+	checksumSeed         = 0x9E3779B97F4A7C15
+	// retryStep advances the hash stream on a collision during the rejection
+	// sampling of the k=3 distinct cell positions. It is unrelated to
+	// checksumSeed; the shared value is only the golden-ratio constant.
+	retryStep uint64 = 0x9E3779B97F4A7C15
 )
 
 type Record struct {
@@ -138,6 +143,10 @@ func pure(count []int64, fpXor, chkXor []uint64, i int) bool {
 	return (count[i] == 1 || count[i] == -1) && chkXor[i] == Checksum(fpXor[i])
 }
 
+// Positions returns the three distinct cell indices of fp under plain
+// mapping: each slot draws from an independent hash stream and is
+// re-sampled until it avoids all earlier cells, matching the paper's
+// uniform k-subset-without-replacement model.
 func Positions(fp uint64, m int, seed uint64) []int {
 	if m <= 0 {
 		panic("bucket count must be positive")
@@ -148,21 +157,28 @@ func Positions(fp uint64, m int, seed uint64) []int {
 		b = Mix64(b ^ seed)
 		c = Mix64(c ^ seed)
 	}
-	positions := [3]int{
-		int(Mix64(a+fp) % uint64(m)),
-		int(Mix64(b+fp) % uint64(m)),
-		int(Mix64(c+fp) % uint64(m)),
+	p0 := firstDistinct(fp, a, m)
+	p1 := firstDistinct(fp, b, m, p0)
+	p2 := firstDistinct(fp, c, m, p0, p1)
+	return []int{p0, p1, p2}
+}
+
+// firstDistinct returns the first value of the hash stream
+// h_k = Mix64(base+fp+k*retryStep) mod m that avoids every position in avoid.
+func firstDistinct(fp, base uint64, m int, avoid ...int) int {
+	for k := uint64(0); ; k++ {
+		p := int(Mix64(base+fp+k*retryStep) % uint64(m))
+		duplicate := false
+		for _, q := range avoid {
+			if p == q {
+				duplicate = true
+				break
+			}
+		}
+		if !duplicate {
+			return p
+		}
 	}
-	if positions[1] == positions[0] && positions[2] == positions[0] {
-		return []int{positions[0]}
-	}
-	if positions[1] == positions[0] {
-		return []int{positions[0], positions[2]}
-	}
-	if positions[2] == positions[0] || positions[2] == positions[1] {
-		return []int{positions[0], positions[1]}
-	}
-	return positions[:]
 }
 
 func Checksum(fp uint64) uint64 {

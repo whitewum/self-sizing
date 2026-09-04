@@ -6,9 +6,10 @@ import java.util.Base64;
 /**
  * Wire codec for an IBLT sketch (used to exchange sketches sidecar &rarr; controller).
  *
- * <p>Format (big-endian): {@code [magic 'IBS2'(4B)][M int(4B)][hashSeed long(8B)]
+ * <p>Format (big-endian): {@code [magic 'IBS3'(4B)][M int(4B)][mapperVersion int(4B)]
+ * [hashSeed long(8B)]
  * [count M*long][fpXor M*long][idXor M*long][chkXor M*long]}.
- * Size = 16 + 32*M bytes. The sketch is the "small control payload" &mdash; it,
+ * Size = 20 + 32*M bytes. The sketch is the "small control payload" &mdash; it,
  * not the whole-table fingerprint set, is what crosses the wire.</p>
  *
  * <p>Pure JDK ({@link ByteBuffer} + {@link Base64}), no third-party dependencies.
@@ -16,8 +17,8 @@ import java.util.Base64;
  */
 public final class SketchCodec {
 
-    private static final int MAGIC = 0x49425332; // "IBS2"
-    private static final int HEADER = 16;        // magic + M + hashSeed
+    private static final int MAGIC = 0x49425333; // "IBS3"
+    private static final int HEADER = 20;        // magic + M + mapperVersion + hashSeed
     private static final int BYTES_PER_CELL = 32; // 4 channels * 8B
 
     private SketchCodec() {
@@ -29,6 +30,7 @@ public final class SketchCodec {
         ByteBuffer buf = ByteBuffer.allocate(HEADER + BYTES_PER_CELL * m);
         buf.putInt(MAGIC);
         buf.putInt(m);
+        buf.putInt(IbltConstants.MAPPER_VERSION);
         buf.putLong(sketch.hashSeed());
         buf.asLongBuffer().put(sketch.countChannel()).put(sketch.fpXorChannel())
                 .put(sketch.idXorChannel()).put(sketch.chkXorChannel());
@@ -45,6 +47,11 @@ public final class SketchCodec {
         int m = buf.getInt();
         if (m <= 0 || bytes.length != HEADER + BYTES_PER_CELL * m) {
             throw new IllegalArgumentException("bad sketch length: M=" + m + ", bytes=" + bytes.length);
+        }
+        int mapperVersion = buf.getInt();
+        if (mapperVersion != IbltConstants.MAPPER_VERSION) {
+            throw new IllegalArgumentException("mapper version mismatch: peer=" + mapperVersion
+                    + ", local=" + IbltConstants.MAPPER_VERSION);
         }
         long hashSeed = buf.getLong();
         long[] count = new long[m];

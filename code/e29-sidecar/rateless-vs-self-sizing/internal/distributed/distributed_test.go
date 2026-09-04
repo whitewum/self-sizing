@@ -4,15 +4,20 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"self-sizing-artifact/rateless-vs-self-sizing/internal/experiment"
+	"self-sizing-artifact/rateless-vs-self-sizing/internal/plain"
 )
 
 func testEndpointServer(t *testing.T, snapshotDir string) *httptest.Server {
 	t.Helper()
 	ep := &Endpoint{Snapshot: snapshotDir}
 	mux := http.NewServeMux()
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, map[string]any{"ok": true, "mapper_version": plain.MapperVersion})
+	})
 	mux.HandleFunc("/ss/build", ep.handlePlain)
 	mux.HandleFunc("/rf/build", ep.handleFixed)
 	mux.HandleFunc("/ri/prepare", ep.handlePrepare)
@@ -23,6 +28,23 @@ func testEndpointServer(t *testing.T, snapshotDir string) *httptest.Server {
 	mux.HandleFunc("/sri/next-shard/", ep.handleShardedNextShard)
 	mux.HandleFunc("/sri/stop", ep.handleShardedStop)
 	return httptest.NewServer(mux)
+}
+
+func TestMapperHandshakeRejectsVersionMismatch(t *testing.T) {
+	newHealthServer := func(version int) *httptest.Server {
+		return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			writeJSON(w, map[string]any{"ok": true, "mapper_version": version})
+		}))
+	}
+	source := newHealthServer(plain.MapperVersion)
+	defer source.Close()
+	target := newHealthServer(plain.MapperVersion - 1)
+	defer target.Close()
+
+	err := verifyMapperHandshake(&http.Client{}, source.URL, target.URL)
+	if err == nil || !strings.Contains(err.Error(), "mapper version mismatch") {
+		t.Fatalf("expected mapper version mismatch, got %v", err)
+	}
 }
 
 func TestDistributedShardedRILifecycle(t *testing.T) {

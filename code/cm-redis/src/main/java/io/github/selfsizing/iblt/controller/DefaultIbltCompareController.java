@@ -52,6 +52,7 @@ public final class DefaultIbltCompareController implements IbltCompareController
 
     private IbltCompareResult compareWithPool(SidecarClient a, SidecarClient b, IbltComparePlan plan,
                                               ExecutorService pool) throws Exception {
+        MapperHandshake.verify(a, b);
         int m = plan.bucketCount0();
         long seed0 = freshSeed(0L);
 

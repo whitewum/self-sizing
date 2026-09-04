@@ -1,6 +1,7 @@
 package io.github.selfsizing.iblt.sidecar;
 
 import io.github.selfsizing.iblt.core.FingerprintStore;
+import io.github.selfsizing.iblt.core.IbltConstants;
 import io.github.selfsizing.iblt.core.IbltSketch;
 import io.github.selfsizing.iblt.core.SketchCodec;
 import io.github.selfsizing.iblt.core.PkTupleCanonicalizer.PkType;
@@ -56,7 +57,7 @@ import java.util.logging.Logger;
  *
  * <p>Text-line protocol (UTF-8):
  * <ul>
- *   <li>{@code GET  /health} &rarr; {@code ok}</li>
+ *   <li>{@code GET  /health} &rarr; {@code ok ... mapperVersion=2}</li>
  *   <li>{@code POST /build-sketch}  body={@code <M>} &rarr; L1 sessionId; L2 {@code scanRows scanMillis buildMillis M wireBytes}; L3 base64(sketch)</li>
  *   <li>{@code POST /rebucket}      body={@code <sessionId> <M>} &rarr; L1 base64(sketch) (rebuilt from the retained store, no re-scan)</li>
  *   <li>{@code POST /resolve-ids}   body=L1 sessionId, then one id per line &rarr; one pk per line (only those matched in this side's store)</li>
@@ -127,7 +128,8 @@ public final class IbltSidecarServer {
     // ---- endpoints ----
 
     private void handleHealth(HttpExchange ex) throws IOException {
-        send(ex, 200, "ok " + dialect.id() + " table=" + table
+        send(ex, 200, "ok " + dialect.id() + " mapperVersion=" + IbltConstants.MAPPER_VERSION
+                + " table=" + table
                 + " scanWorkers=" + scanWorkers + " merkleWorkers=" + merkleWorkers
                 + " merkleConnections=" + merkleConnectionsCreated + "\n");
     }
