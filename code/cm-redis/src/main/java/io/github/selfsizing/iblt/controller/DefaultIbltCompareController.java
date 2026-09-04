@@ -121,6 +121,10 @@ public final class DefaultIbltCompareController implements IbltCompareController
         }
 
         // 3. candidate id -> pk: plus resolved by side A, minus by side B (each holding its own side's rows), de-duplicated union (full)
+        // TODO(id-collision, evaluated-not-fixed): id is the 56-bit cheap8 of the canonical PK.
+        // On collision, resolveIds de-duplicates by id and can drop/mis-map one candidate PK
+        // (recheck never amends the union). End-to-end chance is ~E[C]*rho^2 ~ 1.6e-7 per
+        // 609M-row run (~1 in 6M): too low to fix; (fp, id) pair matching would be the fix.
         Set<String> union = new LinkedHashSet<>();
         union.addAll(a.resolveIds(ra.sessionId(), res.getPlusIds()));
         union.addAll(b.resolveIds(rb.sessionId(), res.getMinusIds()));

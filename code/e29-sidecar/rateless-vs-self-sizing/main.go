@@ -11,6 +11,7 @@ import (
 	"self-sizing-artifact/rateless-vs-self-sizing/internal/distributed"
 	"self-sizing-artifact/rateless-vs-self-sizing/internal/experiment"
 	"self-sizing-artifact/rateless-vs-self-sizing/internal/snapshot"
+	"self-sizing-artifact/rateless-vs-self-sizing/internal/truthaudit"
 )
 
 func main() {
@@ -23,6 +24,8 @@ func main() {
 		generate(os.Args[2:])
 	case "verify":
 		verify(os.Args[2:])
+	case "derive-truth":
+		deriveTruth(os.Args[2:])
 	case "run":
 		run(os.Args[2:])
 	case "endpoint":
@@ -37,7 +40,34 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: rateless-vs-self-sizing <generate|verify|run|endpoint|controller> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: rateless-vs-self-sizing <generate|verify|derive-truth|run|endpoint|controller> [flags]")
+}
+
+func deriveTruth(args []string) {
+	flags := flag.NewFlagSet("derive-truth", flag.ExitOnError)
+	source := flags.String("source", "", "source snapshot directory")
+	target := flags.String("target", "", "target snapshot directory")
+	out := flags.String("out", "", "truth JSON output path")
+	workDir := flags.String("work-dir", "", "directory for temporary partitions")
+	partitions := flags.Int("partitions", 256, "number of bounded-memory hash partitions")
+	verifySHA := flags.Bool("verify-sha256", true, "verify every snapshot shard digest")
+	_ = flags.Parse(args)
+	if *source == "" || *target == "" || *out == "" {
+		fatalf("derive-truth requires -source, -target, and -out")
+	}
+	truth, err := truthaudit.Derive(*source, *target, *workDir, *partitions, *verifySHA)
+	if err != nil {
+		fatalf("derive truth: %v", err)
+	}
+	if err := truthaudit.Write(*out, truth); err != nil {
+		fatalf("write truth: %v", err)
+	}
+	digest, err := truthaudit.Digest(*out)
+	if err != nil {
+		fatalf("hash truth: %v", err)
+	}
+	fmt.Printf("truth=%s sha256=%s plus=%d minus=%d mapper_version=%d\n",
+		*out, digest, len(truth.Plus), len(truth.Minus), truth.Metadata.MapperVersion)
 }
 
 func endpoint(args []string) {

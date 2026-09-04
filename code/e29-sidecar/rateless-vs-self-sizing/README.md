@@ -36,6 +36,29 @@ done
 The pinned external dependency and module path are recorded in `go.mod` and
 `go.sum`.
 
+For an immutable production snapshot pair, derive an exact multiset truth file
+with bounded memory and verify every input shard before replaying:
+
+```bash
+go run . derive-truth \
+  -source /path/to/source -target /path/to/target \
+  -work-dir /path/to/scratch -partitions 256 \
+  -out /path/to/truth.json
+go run . run -arm ss \
+  -source /path/to/source -target /path/to/target \
+  -truth /path/to/truth.json -verify-sha256 \
+  -m1 512 -alpha 1.824 -out result.json
+```
+
+After all corrected runs finish, `scripts/finalize_corrected_sweep.py` checks
+that every result used the verified truth and records the mapper version, code
+commit/diff digest, replay-binary digest, input-manifest digests, result
+digests, and aggregate statistics in one sweep manifest.
+
+For the formal 12-seed sweep, `scripts/rerun_truth_audit.sh` runs four seeds in
+parallel, writes each result through a temporary file, and replaces the prior
+JSON only after the replay exits successfully with an exact truth match.
+
 ## Distributed mode
 
 The `endpoint` and `controller` commands exercise the networked path. Each

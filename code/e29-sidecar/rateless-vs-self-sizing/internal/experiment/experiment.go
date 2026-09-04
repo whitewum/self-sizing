@@ -46,6 +46,7 @@ type Stage struct {
 
 type Result struct {
 	Config          Config    `json:"config"`
+	MapperVersion   int       `json:"mapper_version"`
 	StartedAt       time.Time `json:"started_at"`
 	TotalMillis     int64     `json:"total_millis"`
 	SourceRows      int64     `json:"source_rows"`
@@ -75,6 +76,7 @@ type Truth struct {
 
 func Run(config Config) (result Result, err error) {
 	result.Config = config
+	result.MapperVersion = plain.MapperVersion
 	result.StartedAt = time.Now().UTC()
 	started := time.Now()
 	memory := startMemorySampler()

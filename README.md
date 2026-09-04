@@ -59,6 +59,7 @@ python3 scripts/verify_manifest.py --scope git
 python3 scripts/scan_public_export.py
 python3 scripts/verify_paper_numbers.py
 (cd code/e29-sidecar/rateless-vs-self-sizing && go test ./...)
+python3 scripts/verify_mapper_interop.py
 ```
 
 See `REPRODUCE.md` for figure and table commands. Large inputs are referenced
@@ -76,6 +77,12 @@ servers to loopback or protect them with an appropriate network boundary.
 
 See `DATA_AVAILABILITY.md` for the treatment of production-derived data and
 the public substitutes provided by this repository.
+
+## Acknowledgments
+
+We thank Byungwoong Yoo (Independent Researcher) for identifying the
+calibration mismatch between the theoretical fixed-degree estimator and the
+mapper implementation.
 
 ## License
 
