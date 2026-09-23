@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the seven empirical tables and key quantitative paper claims.
+"""Verify the eight empirical tables and key quantitative paper claims.
 
 All checks use the public Artifact CSVs and their frozen paper-facing values.
 """
@@ -210,6 +210,42 @@ def check_g1g6() -> None:
     require(lookup[("G6", "1163")]["self_sizing_wall_s"] == "34.5", "G6 drift")
 
 
+def check_prod_operation() -> None:
+    m = {row["metric"]: float(row["value"]) for row in rows("production-operation-summary.csv")}
+    # Table rows: runs, rows (max), d range, dhat/d range per path.
+    close(m["runs_fast_path"], 244)
+    close(round(m["fast_path_rows_max"] / 1e6, 1), 14.3)
+    close(m["fast_path_d_min"], 0)
+    close(m["fast_path_d_max"], 385)
+    close(m["runs_second_round"], 25)
+    close(round(m["second_round_rows_max"] / 1e6, 1), 31.3)
+    close(m["second_round_d_min"], 446)
+    close(m["second_round_d_max"], 13308)
+    close(m["second_round_dhat_ratio_min"], 0.868)
+    close(m["second_round_dhat_ratio_max"], 1.004)
+    close(m["runs_fallback"], 3)
+    # Text claims around the table.
+    close(m["runs_completed"], 269)
+    close(m["runs_completed_residual_zero"], 269)
+    close(round(m["fast_path_share"] * 100, 1), 90.7)
+    close(round(m["zero_difference_share"] * 100), 43)
+    close(m["fallback_sql_error"], 2)
+    close(m["fallback_cost_exit"], 1)
+    require(m["second_round_dhat_ratio_min"] > 0.8598, "second-round dhat/d below q_0.01")
+    # Paper: "every M2 is at least 1.73 x d", a floor, not a rounded value.
+    require(1.73 <= m["second_round_m2_over_d_min"] < 1.74, "M2/d floor drift")
+    require(m["zero_difference_dhat_exact"] == 1 and m["unit_difference_dhat_exact"] == 1,
+            "d in {0, 1} runs no longer return dhat = d exactly")
+    close(m["fast_path_distinct_sets_d_ge3"], 40)
+    close(round(m["fast_path_dhat_ratio_mean"], 3), 1.003)
+    close(round(m["fast_path_dhat_ratio_sd"] * 100, 1), 6.9)
+    close(m["one_sided_runs"], 20)
+    close(m["one_sided_tables"], 11)
+    close(m["one_sided_distinct_sets"], 12)
+    close(round(m["one_sided_dhat_ratio_mean"], 3), 0.997)
+    close(round(m["one_sided_dhat_ratio_sd"] * 100, 1), 5.3)
+
+
 def check_additional_claims() -> None:
     buckets = rows("production-size-buckets.csv")
     total_runs = sum(int(row["runs"]) for row in buckets)
@@ -245,6 +281,7 @@ def main() -> int:
         ("tab:profiles-e2e", check_profiles_e2e),
         ("tab:phase-breakdown", check_phase_breakdown),
         ("tab:g1g6", check_g1g6),
+        ("tab:prod-operation", check_prod_operation),
         ("additional claims", check_additional_claims),
     )
     try:
@@ -254,7 +291,7 @@ def main() -> int:
     except (CheckFailure, KeyError, ValueError) as error:
         print(f"FAIL  {error}")
         return 1
-    print(f"checked_tables=7 additional_claim_groups=1 failures=0")
+    print(f"checked_tables=8 additional_claim_groups=1 failures=0")
     return 0
 
 

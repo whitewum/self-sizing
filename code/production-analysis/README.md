@@ -1,4 +1,19 @@
-# Production comparison-log analysis
+# Production log analysis
+
+## Production operation of self-sizing (Section 5.4)
+
+`summarize_production_operation.py` produced
+`data/paper/production-operation-summary.csv` from the self-sizing run logs
+(`run_record.jsonl`, one JSON object per run). The logs contain table names
+and run identifiers and are **not distributed**; the script docstring lists
+the fields it reads, and the output contains only aggregate values.
+
+```bash
+python3 summarize_production_operation.py <LOG_ROOT> --m1 512 \
+  --out ../../data/paper/production-operation-summary.csv
+```
+
+## Production comparison-log profile (Sections 2 and 5)
 
 `analyze_a1_a7.py` is the script that produced the reviewed aggregate CSVs
 shipped in `data/paper/` (`paper_production_summary.csv`,

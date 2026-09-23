@@ -9,6 +9,13 @@ or operational metadata and are subject to access restrictions. The repository
 provides reviewed aggregate CSV files, field descriptions, analysis scripts,
 and synthetic replay materials as the public substitutes.
 
+The self-sizing production-operation logs (Section 5.4) record table names
+and run identifiers of a partner's production database and are not
+distributed. `data/paper/production-operation-summary.csv` gives every
+aggregate number reported in the paper, and
+`code/production-analysis/summarize_production_operation.py` documents how
+it was computed and which log fields it reads.
+
 The rank-bucket data retains only paper profile labels, block counts, dirty
 block counts, and normalized key-rank buckets. It does not contain task IDs,
 schema names, table names, accounts, hosts, or source-to-target mappings.

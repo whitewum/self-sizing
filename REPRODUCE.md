@@ -35,6 +35,7 @@ The plotting scripts write PNG and SVG next to themselves (`figs/`,
 | `fig:prod-teaser` | `figures/make_s6_figures.py` (`fig62_production_profile`) | `production-d-quantiles.csv`, `production-duration-quantiles.csv` | `python3 figures/make_s6_figures.py` |
 | `fig:rank` | `figures/make_rank_figure.py` | `production-rank-buckets-anonymized.csv` | `python3 figures/make_rank_figure.py data/paper/production-rank-buckets-anonymized.csv --output figures/out/fig_rank.svg` |
 | `fig:relational` | `figures/make_p1_extra_figure.py` | `e29-p1-extra-paper-results.csv` | `python3 figures/make_p1_extra_figure.py data/paper/e29-p1-extra-paper-results.csv --output figures/out/fig_p1_extra.svg` |
+| `fig:sign-projection` | `code/simulations/plain-t1/make_sign_projection_fig.py` | `sign-imbalance-shape-points.csv` | `python3 code/simulations/plain-t1/make_sign_projection_fig.py` (writes `figs/sign_projection_combined.{png,svg}` next to the script) |
 
 `figures/make_s6_figures.py` also emits the P2 worker ablation
 (`fig63a_p2_ablation` from `paper_p2_worker_ablation.csv`), the per-profile E2E
@@ -83,6 +84,7 @@ python3 scripts/verify_paper_numbers.py
 | `tab:profiles-e2e` | `paper_profiles_e2e.csv`, `paper_profiles_protocol_evidence.csv` |
 | `tab:phase-breakdown` | `paper_p1_phase_breakdown.csv` |
 | `tab:g1g6` | `paper_g1g6.csv` |
+| `tab:prod-operation` | `production-operation-summary.csv` (aggregate of access-restricted logs; see below) |
 
 `tab:capacity-tiers` is regenerated from the two shipped 1M-trial summaries.
 The five-tier T1 grid has 200 cells: the original 160-cell summary covers
@@ -125,6 +127,21 @@ python3 code/simulations/plain-t1/lock_e13.py \
 
 The output contains both `all_m_ge_256`, which is the aggregate printed in the
 paper, and `all_five_tiers`, which is retained for full-grid diagnostics.
+
+`production-operation-summary.csv` holds every number reported for the
+production operation (Section 5.4): run counts per path, row and difference
+ranges, the `dhat/d` ranges and moments, and the fallback breakdown. It was
+produced by `code/production-analysis/summarize_production_operation.py`
+from run logs that are not distributed (see `DATA_AVAILABILITY.md`); the
+script documents the log fields it reads.
+
+## Sign of `c_F`
+
+The statement that every measured `c_F` is positive for k=3 (Section 3.3)
+comes from `code/simulations/cf-sign/`: an exact enumeration
+(`cf_sign_exact.py`) and a C Monte Carlo (`cf_mc.c`), with their outputs and
+SHA-256 sums checked in. See `code/simulations/cf-sign/README.md` for the
+commands; a full rerun takes about 20 minutes on an 8-core laptop.
 
 ## Re-running a simulation from scratch
 

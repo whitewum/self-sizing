@@ -1,0 +1,33 @@
+metric,value,unit,scope,note
+runs_total,272,runs,M1=512 production runs,deduplicated by run id
+table_tasks,46,tasks,M1=512 production runs,
+runs_completed,269,runs,M1=512 production runs,all decoded with zero residual
+runs_completed_residual_zero,269,runs,M1=512 production runs,
+runs_fast_path,244,runs,1-RTT fast path,
+fast_path_share,0.9071,fraction,completed runs,
+fast_path_rows_max,14323295,rows,1-RTT fast path,max over both sides
+fast_path_d_min,0,keys,1-RTT fast path,
+fast_path_d_max,385,keys,1-RTT fast path,largest d decoded in round 1
+runs_second_round,25,runs,second round,
+second_round_rows_max,31284138,rows,second round,max over both sides
+second_round_d_min,446,keys,second round,smallest d needing round 2
+second_round_d_max,13308,keys,second round,
+second_round_dhat_ratio_min,0.868,ratio,second round,dhat/d; q_0.01=0.8598
+second_round_dhat_ratio_max,1.004,ratio,second round,dhat/d
+second_round_m2_over_d_min,1.735,ratio,second round,M2/d
+runs_fallback,3,runs,M1=512 production runs,
+fallback_sql_error,2,runs,fallback,SQL error during scan before any sketch
+fallback_cost_exit,1,runs,fallback,second-round sketch would exceed direct key transfer
+zero_difference_runs,116,runs,completed runs,
+zero_difference_share,0.4312,fraction,completed runs,
+zero_difference_dhat_exact,1,bool,d=0 runs,1 = every dhat equals 0
+unit_difference_runs,36,runs,completed runs,
+unit_difference_dhat_exact,1,bool,d=1 runs,1 = every dhat equals 1
+fast_path_distinct_sets_d_ge3,40,sets,"1-RTT fast path, d>=3","distinct (table, d, dhat)"
+fast_path_dhat_ratio_mean,1.0034,ratio,"1-RTT fast path, d>=3",dhat/d over distinct sets
+fast_path_dhat_ratio_sd,0.0686,ratio,"1-RTT fast path, d>=3",sample standard deviation
+one_sided_runs,20,runs,"fully one-sided, d>=3",
+one_sided_tables,11,tables,"fully one-sided, d>=3",
+one_sided_distinct_sets,12,sets,"fully one-sided, d>=3","distinct (table, d, dhat)"
+one_sided_dhat_ratio_mean,0.9966,ratio,"fully one-sided, d>=3",
+one_sided_dhat_ratio_sd,0.0534,ratio,"fully one-sided, d>=3",sample standard deviation

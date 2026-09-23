@@ -19,8 +19,8 @@ with byte counts and SHA-256 in `data/manifest.tsv`.
 
 ## Repository contents
 
-- `code/simulations/` — plain-IBLT, irregular-IBLT, and Strata-style baseline
-  simulations, together with their plotting scripts;
+- `code/simulations/` — plain-IBLT, irregular-IBLT, Strata-style baseline, and
+  `c_F` sign simulations, together with their plotting scripts;
 - `code/e29-sidecar/` — synthetic relational replay utilities and the
   rateless-versus-self-sizing comparison harness;
 - `code/sql-pushdown-mysql/` — a parameterized MySQL SQL-pushdown replay;
